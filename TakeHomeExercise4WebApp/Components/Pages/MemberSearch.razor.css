@@ -1,0 +1,28 @@
+﻿body {
+}
+
+.search-container {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 45%;
+
+    & input {
+                max-width: 90%;
+            }
+}
+
+.input-container {
+    align-items: center;
+}
+
+.buttons-container {
+    gap: 1rem;    
+}
+
+.btn {
+    
+}
+
+

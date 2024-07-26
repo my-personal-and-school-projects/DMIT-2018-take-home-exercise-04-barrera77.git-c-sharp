@@ -1,0 +1,119 @@
+﻿@page "/Member";
+
+<PageTitle>Member</PageTitle>
+
+<h3>Member Edit</h3>
+
+<div class="container border py">
+    <header>
+        <h4>New Member</h4>
+    </header>
+
+    <body>
+        <section>
+            <div class="buttons-container d-flex">
+                <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px">Save</MudBlazor.MudButton>
+                <MudBlazor.MudButton Class="btn btn-danger" Style="width: 90px">Cancel</MudBlazor.MudButton>
+            </div>
+            <fieldset>
+                <div class="new-member-info row-cols-2">
+                    <div class="col-left col-6">
+                        <div class="row-cols-2 d-flex">
+                            <label for="first-name" class="form-label col-2">First Name:</label>
+                            <input class="form-control" type="text" id="first-name" />
+                        </div>
+
+                        <div class="row-cols-2 d-flex">
+                            <label for="last-name" class="form-label col-2">Last Name:</label>
+                            <input class="form-control" type="text" id="last-name" />
+                        </div>
+
+                        <div class="row-cols-2 d-flex">
+                            <label for="address" class="form-label col-2">Address:</label>
+                            <input class="form-control" type="text" id="address" />
+                        </div>
+
+                        <div class="row-cols-2 d-flex">
+                            <label for="city" class="form-label col-2">City:</label>
+                            <input class="form-control" type="text" id="city" />
+                        </div>
+
+                        <div class="row-cols-2 d-flex">
+                            <label for="postal-code" class="form-label col-2">Postal Code:</label>
+                            <input class="form-control" type="text" id="postal-code" />
+                        </div>
+                    </div>
+                    <div class="col-right col-6">
+                        <div class="row-cols-2 d-flex">
+                            <label for="phone" class="form-label col-2">Phone:</label>
+                            <input class="form-control" type="text" id="phone" />
+                        </div>
+
+                        <div class="row-cols-2 d-flex">
+                            <label for="email" class="form-label col-2">Email:</label>
+                            <input class="form-control" type="text" id="email" />
+                        </div>
+
+                        <div class="row-cols-2 d-flex">
+                            <label for="birth-date" class="form-label col-2">Birth Date:</label>
+                            <input class="form-control" type="date" id="birth-date" />
+                        </div>
+
+                        <div class="row-cols-2 d-flex">
+                            <label for="certification" class="form-label col-2">Certification:</label>
+                            <select class="form-select form-control" type="dr" id="certification">
+                                <option selected value="0"> Select . . .</option>
+                            </select>
+                        </div>
+                    </div>
+               </div>
+            </fieldset>           
+        </section>
+
+        <section>
+            <h4>Member Car(s)</h4>
+
+        </section>
+
+        <section>
+            <h4>New Member Car</h4>
+            <div class="buttons-container d-flex">
+                <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px">Add Car</MudBlazor.MudButton>
+            </div>
+            <fieldset>
+                <div class="new-member-car col-6">
+                    <div class="row-cols-2 d-flex">
+                        <label for="description" class="form-label col-2">Description:</label>
+                        <input class="form-control" type="text" id="description" />
+                    </div>
+
+                    <div class="row-cols-2 d-flex">
+                        <label for="serial-number" class="form-label col-2">Serial Number:</label>
+                        <input class="form-control" type="number" id="serial-number" />
+                    </div>
+
+                    <div class="row-cols-2 d-flex">
+                        <label for="ownership" class="form-label col-2">Ownership:</label>
+                        <select class="form-select form-control" type="dr" id="ownership">
+                            <option selected value="0"> Select . . .</option>
+                        </select>
+                    </div>
+
+                    <div class="row-cols-2 d-flex">
+                        <label for="state" class="form-label col-2">State:</label>
+                        <select class="form-select form-control" type="dr" id="state" >
+                            <option selected value="0"> Select . . .</option>
+                        </select>
+                    </div>
+
+                    <div class="row-cols-2 d-flex">
+                        <label for="car-class" class="form-label col-2">Car Class:</label>
+                        <select class="form-select form-control" type="dr" id="car-class">
+                            <option selected value="0"> Select . . .</option>
+                        </select>
+                    </div>
+                </div>
+            </fieldset>
+        </section>
+    </body>
+</div>

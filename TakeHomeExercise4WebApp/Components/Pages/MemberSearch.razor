@@ -1,0 +1,29 @@
+﻿@page "/MemberSearch";
+
+<PageTitle>Member Search</PageTitle>
+
+@using Microsoft.AspNetCore.Components.QuickGrid;
+
+
+<h3>Member List</h3>
+
+<div class="container border py">
+    <header>
+        <h4>Search</h4>
+    </header>
+    <body>
+        <div class="search-container">
+            <div class="input-container row-cols-2 d-flex">
+                <label for="last-name" class="form-label col-4">Last Name:</label>
+                <input class="form-control" type="text" id="last-name" />
+            </div>
+
+            <div class="buttons-container d-flex">
+                <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px">Search</MudBlazor.MudButton>
+                <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px">New</MudBlazor.MudButton>
+            </div>
+
+            
+        </div>
+    </body>
+</div>
