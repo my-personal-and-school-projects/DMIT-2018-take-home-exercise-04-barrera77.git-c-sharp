@@ -1,4 +1,5 @@
-﻿using TakeHomeExercise4System.Entities;
+﻿using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
+using TakeHomeExercise4System.Entities;
 using TakeHomeExercise4System.ViewModels;
 using static MudBlazor.CategoryTypes;
 
@@ -16,8 +17,12 @@ namespace TakeHomeExercise4System.BLL
 
         public List<MemberListView> GetMembersList(string searchParam)
         {
+            if (string.IsNullOrWhiteSpace(searchParam) || !char.IsLetter(searchParam[0]))
+            {
+                throw new ArgumentException($"{searchParam} is not valid lastName");
+            }
             return _context.Members
-                .Where(m => m.LastName == searchParam)
+                .Where(m => m.LastName.StartsWith(searchParam))
                 .Select(m => new MemberListView
                 {
                     FirstName = m.FirstName,
@@ -32,7 +37,5 @@ namespace TakeHomeExercise4System.BLL
                 })
                 .ToList();
         }
-
-
     }
 }
