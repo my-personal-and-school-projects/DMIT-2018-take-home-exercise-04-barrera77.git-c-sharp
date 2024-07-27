@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.QuickGrid;
 using TakeHomeExercise4System.BLL;
 using TakeHomeExercise4System.ViewModels;
 
@@ -8,7 +9,7 @@ namespace TakeHomeExercise4WebApp.Components.Pages
     public partial class MemberSearch
     {
         [Inject]
-        MemberListServices MemberListServices { get; set; }
+        MemberListServices? MemberListServices { get; set; }
 
         private List<MemberListView> MemberList { get; set;}
 
@@ -43,6 +44,6 @@ namespace TakeHomeExercise4WebApp.Components.Pages
         }
 
         //Set pagination
-        //protected PaginationState Pagination = new PaginationState { ItemsPerPage = 10 };
+        protected PaginationState Pagination = new PaginationState { ItemsPerPage = 10 };
     }
 }

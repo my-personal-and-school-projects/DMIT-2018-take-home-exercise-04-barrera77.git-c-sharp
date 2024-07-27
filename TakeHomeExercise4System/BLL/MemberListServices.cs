@@ -22,11 +22,15 @@ namespace TakeHomeExercise4System.BLL
                 throw new ArgumentException($"{searchParam} is not valid lastName");
             }
             return _context.Members
-                .Where(m => m.LastName.StartsWith(searchParam))
+                .Where(m => m.LastName.Contains(searchParam))
+                .OrderBy(m => m.LastName)
                 .Select(m => new MemberListView
                 {
                     FirstName = m.FirstName,
                     LastName = m.LastName,
+                    City = m.City,
+                    Phone = m.Phone,
+                    Email = m.EmailAddress,
                     Certification = _context.Certifications
                                     .Where(c => c.CertificationLevel == m.CertificationLevel)
                                     .Select(c => c.Description)

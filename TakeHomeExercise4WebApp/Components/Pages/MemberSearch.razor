@@ -15,40 +15,41 @@
         <div class="search-container">
             <div class="input-container row-cols-2 d-flex">
                 <label for="last-name" class="form-label col-4">Last Name:</label>
-                <input class="form-control" type="text" id="last-name" @bind="FirstName"/>
+                <input class="form-control" type="text" id="last-name" @bind="SearchParam" />
             </div>
 
             <div class="buttons-container d-flex">
-                <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px">Search</MudBlazor.MudButton>
+                <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px" @onclick="SearchMembers">Search</MudBlazor.MudButton>
                 <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px">New</MudBlazor.MudButton>
             </div>
-
-            @if(MemberList != null)
+        </div>
+        <div class="table-container">
+            @if (MemberList != null)
             {
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Certification</th>
-                            <th>Vehicle Count</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var member in MemberList)
-                        {
-                            <tr>
-                                <td>@member.FirstName</td>
-                                <td>@member.LastName</td>
-                                <td>@member.Certification</td>
-                                <td>@member.VehicleCount</td>
-                            </tr>
-                        }
-                    </tbody>
+                <div class="page-size-chooser">
+                    Items per page:
+                    <select @bind="Pagination.ItemsPerPage">
+                        <option>5</option>
+                        <option>10</option>
+                        <option>20</option>
+                        <option>100</option>
+                    </select>
+                </div>
 
-                </table>
-                }
-            
+                <QuickGrid Items="MemberList.AsQueryable()" Pagination="Pagination" Class="quickgrid-row-divider">
+                    <TemplateColumn>
+                        <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px">Edit</MudBlazor.MudButton>
+                    </TemplateColumn>
+                    <PropertyColumn Title="First Name" Property="@(m => m.FirstName)" Sortable="true"></PropertyColumn>
+                    <PropertyColumn Title="Last Name" Property="@(m => m.LastName)" Sortable="true"></PropertyColumn>
+                    <PropertyColumn Title=" City" Property="@(m => m.City)" Sortable="true"></PropertyColumn>
+                    <PropertyColumn Title=" Phone" Property="@(m => m.Phone)" Sortable="true"></PropertyColumn>
+                    <PropertyColumn Title=" Email" Property="@(m => m.Email)" Sortable="true"></PropertyColumn>
+                    <PropertyColumn Title=" Certification" Property="@(m => m.Certification)" Sortable="true"></PropertyColumn>
+                    <PropertyColumn Title=" Vehicle Count" Property="@(m => m.VehicleCount)" Sortable="true"></PropertyColumn>
+                </QuickGrid>
+                <Paginator State="@Pagination" />
+            }
         </div>
     </body>
 </div>

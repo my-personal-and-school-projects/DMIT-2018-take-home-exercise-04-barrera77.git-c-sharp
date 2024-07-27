@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using TakeHomeExercise4System.Entities;
-using TakeHomeExercise4System.ViewModels;
 using TakeHomeExercise4System.BLL;
 
 namespace TakeHomeExercise4System
