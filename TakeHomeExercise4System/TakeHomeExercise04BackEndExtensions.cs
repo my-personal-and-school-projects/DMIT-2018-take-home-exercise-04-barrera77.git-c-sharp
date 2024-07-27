@@ -19,6 +19,11 @@ namespace TakeHomeExercise4System
                 return new MemberListServices(context!);
             });
 
+            services.AddTransient<MemberServices>((ServiceProvider) =>
+            {
+                var context = ServiceProvider.GetService<ERace2024R1Context>();
+                return new MemberServices(context!);
+            });
         }
     }
 }

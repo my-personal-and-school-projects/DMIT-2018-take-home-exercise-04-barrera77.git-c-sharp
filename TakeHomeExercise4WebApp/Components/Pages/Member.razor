@@ -61,8 +61,16 @@
 
                         <div class="row-cols-2 d-flex">
                             <label for="certification" class="form-label col-2">Certification:</label>
-                            <select class="form-select form-control" type="dr" id="certification">
-                                <option selected value="0"> Select . . .</option>
+                            <select class="form-select form-control" value="@(CertificationLevel == null ? ""  : CertificationLevel)" id="certification">
+                                <option selected value=""> Select . . .</option>
+
+                                @if(Certifications != null)
+                                {
+                                    foreach (var c in Certifications)
+                                    {
+                                        <option value="@c.CertificationLevel">@c.Description</option>
+                                    }
+                                }
                             </select>
                         </div>
                     </div>
@@ -94,22 +102,44 @@
 
                     <div class="row-cols-2 d-flex">
                         <label for="ownership" class="form-label col-2">Ownership:</label>
-                        <select class="form-select form-control" type="dr" id="ownership">
-                            <option selected value="0"> Select . . .</option>
+                        <select class="form-select form-control" id="ownership">
+                            <option selected value=""> Select . . .</option>
+                            @if (OwnershipDescriptions != null)
+                            {
+                                foreach (var description in OwnershipDescriptions)
+                                {
+                                    <option value="@OwnershipDescriptions.IndexOf(description)">@description</option>                                    
+                                }
+                            }
                         </select>
                     </div>
 
                     <div class="row-cols-2 d-flex">
                         <label for="state" class="form-label col-2">State:</label>
-                        <select class="form-select form-control" type="dr" id="state" >
+                        <select class="form-select form-control" id="state" >
                             <option selected value="0"> Select . . .</option>
+                            @if (CarStates != null)
+                            {
+                                foreach (var state in CarStates)
+                                {
+                                    <option value="@CarStates.IndexOf(state)">@state</option>
+                                }
+                            }                           
                         </select>
                     </div>
 
                     <div class="row-cols-2 d-flex">
                         <label for="car-class" class="form-label col-2">Car Class:</label>
-                        <select class="form-select form-control" type="dr" id="car-class">
+                        <select class="form-select form-control" value="@(CarClassID == null ? 0 : CarClassID)" id="car-class">
                             <option selected value="0"> Select . . .</option>
+
+                            @if (CarClasses != null)
+                            {
+                                foreach (var c in CarClasses  )
+                                {
+                                    <option value="@c.CarClassID">@c.CarClassName</option>
+                                }
+                            }
                         </select>
                     </div>
                 </div>
