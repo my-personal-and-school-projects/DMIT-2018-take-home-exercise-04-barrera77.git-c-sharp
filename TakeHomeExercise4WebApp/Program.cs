@@ -17,8 +17,6 @@ var connectionString = builder.Configuration.GetConnectionString("THE04");
 builder.Services.TakeHomeExercise4BackEndDependencies(options =>
     options.UseSqlServer(connectionString));
 
-
-
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();

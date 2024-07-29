@@ -7,11 +7,11 @@
 
 <h3>Member List</h3>
 
-<div class="container border py">
+<div class="wrapper border ">
     <header>
         <h4>Search</h4>
     </header>
-    <body>
+    <div>
         <div class="search-container">
             <div class="input-container row-cols-2 d-flex">
                 <label for="last-name" class="form-label col-4">Last Name:</label>
@@ -20,7 +20,7 @@
 
             <div class="buttons-container d-flex">
                 <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px" @onclick="SearchMembers">Search</MudBlazor.MudButton>
-                <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px">New</MudBlazor.MudButton>
+                <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px" @onclick="(() => OnNew(0))">New</MudBlazor.MudButton>
             </div>
         </div>
         <div class="table-container">
@@ -38,7 +38,8 @@
 
                 <QuickGrid Items="MemberList.AsQueryable()" Pagination="Pagination" Class="quickgrid-row-divider">
                     <TemplateColumn>
-                        <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px">Edit</MudBlazor.MudButton>
+                        <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px"  @onclick="(() => OnEdit(context.MemberID))">Edit</MudBlazor.MudButton>
+                        @* <a href="/Member?@context.MemberID" id="bnt-edit" class="btn btn-success" >Edit</a> *@
                     </TemplateColumn>
                     <PropertyColumn Title="First Name" Property="@(m => m.FirstName)" Sortable="true"></PropertyColumn>
                     <PropertyColumn Title="Last Name" Property="@(m => m.LastName)" Sortable="true"></PropertyColumn>
@@ -51,5 +52,5 @@
                 <Paginator State="@Pagination" />
             }
         </div>
-    </body>
+    </div>
 </div>

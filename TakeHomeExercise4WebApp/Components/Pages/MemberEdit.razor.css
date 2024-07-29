@@ -1,29 +1,41 @@
 ﻿.wrapper {
     padding: 1rem;
 }
-
-.search-container {
-    align-items: center;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    width: 45%;
-
-    & input {
-                max-width: 90%;
-            }
+.col-right {
+    
 }
 
-.input-container {
-    align-items: center;
+section {
+    padding-bottom: 2rem;
 }
 
 .buttons-container {
-    gap: 1rem;    
+    gap: 1rem;
+    padding-bottom: 1rem;
 }
 
-.table-container {
-    padding-top: 1.5rem;
+.new-member-info {
+    padding-bottom: 1rem;
+    display: flex;
+}
+
+.col-left, .col-right, .new-member-car {
+    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    & div
+
+{
+    align-items: center;
+}
+}
+
+::deep .form-control {
+    max-width: 60%;
+}
+
+::deep #serial-number, ::deep #description {
+    max-width: 100%;
 }
 
 
@@ -59,11 +71,3 @@
     border-left: none;
     border-right: none;
 }
-
-::deep .quickgrid-row-divider {
-    width: 100%;
-    border: none;
-    margin-bottom: -10px;
-}
-
-

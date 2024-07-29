@@ -1,0 +1,235 @@
+﻿@page "/Member/{MemberID:int?}";
+
+<PageTitle>Member Edit</PageTitle>
+
+@using Microsoft.AspNetCore.Components.QuickGrid;
+
+<h3>Member Edit</h3>
+
+<div class="wrapper border py">
+    <header>
+
+        @if(MemberID == 0)
+        {
+            <h4>New Member</h4>
+        }
+        else
+        {
+            <h4>@Member.LastName</h4>
+        }
+
+       
+    </header>
+
+    <body>
+        <section>
+            <div class="buttons-container d-flex">
+                <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px">Save</MudBlazor.MudButton>
+                <MudBlazor.MudButton Class="btn btn-danger" Style="width: 90px">Cancel</MudBlazor.MudButton>
+            </div>
+             <fieldset>
+                <div class="new-member-info row-cols-2">
+                    <div class="col-left col-6">
+                        <div class="row-cols-2 d-flex">
+                            <label for="first-name" class="form-label col-2">First Name:</label>
+                            <InputText class="form-control" id="first-name" @bind-Value="@FirstName" />
+                        </div>
+
+                        <div class="row-cols-2 d-flex">
+                            <label for="last-name" class="form-label col-2">Last Name:</label>
+                            <InputText class="form-control" type="text" id="last-name" @bind-Value="@LastName" />
+                        </div>
+
+                        <div class="row-cols-2 d-flex">
+                            <label for="address" class="form-label col-2">Address:</label>
+                            <InputText class="form-control" type="text" id="address" @bind-Value="@Address" />
+                        </div>
+
+                        <div class="row-cols-2 d-flex">
+                            <label for="city" class="form-label col-2">City:</label>
+                            <InputText class="form-control" type="text" id="city" @bind-Value="@City" />
+                        </div>
+
+                        <div class="row-cols-2 d-flex">
+                            <label for="postal-code" class="form-label col-2">Postal Code:</label>
+                            <InputText class="form-control" type="text" id="postal-code" @bind-Value="@PostalCode" />
+                        </div>
+                    </div>
+
+                    <div class="col-right col-6">
+                        <div class="row-cols-2 d-flex">
+                            <label for="phone" class="form-label col-2">Phone:</label>
+                            <InputText class="form-control" type="text" id="phone" @bind-Value="@Phone"/>
+                        </div>
+
+                        <div class="row-cols-2 d-flex">
+                            <label for="email" class="form-label col-2">Email:</label>
+                            <InputText class="form-control" type="text" id="email" @bind-Value="@Email"/>
+                        </div>
+
+                        <div class="row-cols-2 d-flex">
+                            <label for="birth-date" class="form-label col-2">Birth Date:</label>
+                            <InputDate class="form-control" id="birth-date" @bind-Value="BirthDate"/>
+                        </div>
+
+                        <div class="row-cols-2 d-flex">
+                            <label for="certification" class="form-label col-2">Certification:</label>
+                            <InputSelect @bind-Value="@(Member.CertificationLevel)" class="form-select form-control" id="certification">
+                                <option selected value=""> Select . . .</option>
+
+                                @if (certifications != null)
+                                {
+                                    foreach (var c in certifications)
+                                    {
+                                        <option value="@c.CertificationLevel">@c.Description</option>
+                                    }
+                                }
+                            </InputSelect>
+                        </div>
+                    </div>
+                </div>
+             </fieldset>
+        </section>
+
+        <section>
+            <h4>Member Car(s)</h4>
+
+            <div>
+                @if(MemberID == 0 || VehicleCount ==0)
+                {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+
+                                <th>Car ID</th>
+                                <th>Temp. ID</th>
+                                <th>Description</th>
+                                <th>Serial</th>
+                                <th>Ownership</th>
+                                <th>Status</th>
+                                <th>Car Class</th>
+                                <th>Remove Flag</th>
+                            </tr>
+                        </thead>
+                    </table>
+                }
+                else
+                {
+                    <QuickGrid Items="Cars.AsQueryable()" Class="quickgrid-row-divider">
+                        <TemplateColumn>
+                            <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px" >Remove</MudBlazor.MudButton>
+                        </TemplateColumn>
+                        <PropertyColumn Property="@(c => c.CarId)" Title="CardID"/>
+                        <PropertyColumn Property="@(c => c.CarId)" Title="TempID"/>
+                        <TemplateColumn Title="Description">
+                            <InputText class="form-control" id="description" @bind-Value="context.Description" />
+                        </TemplateColumn>
+                        <TemplateColumn Title="Serial">
+                            <InputText class="form-control" id="serial-number" @bind-Value="context.SerialNumber" />
+                        </TemplateColumn>                        
+                        <TemplateColumn Title="Ownership">
+                            <InputSelect @bind-Value="@context.Ownership" class="form-select" id="ownership">
+                                @if (OwnershipDescriptions != null)
+                                {
+                                    foreach (var description in OwnershipDescriptions)
+                                    {
+                                        <option value="@description">@description</option>
+                                    }
+                                }
+                            </InputSelect>
+                        </TemplateColumn>
+
+                      <TemplateColumn Title="State">
+                            <InputSelect class="form-select" @bind-Value="@context.State" id="state">
+                                @if (CarStates != null)
+                                {
+                                    foreach (var state in CarStates)
+                                    {
+                                        <option value="@state">@state</option>
+                                    }
+                                }
+                            </InputSelect>
+                      </TemplateColumn>
+
+                      <TemplateColumn Title="Car Class">                            
+                            <InputSelect class="form-select" id="car-class" @bind-Value="context.CarClassId">
+                                @if (CarClasses != null)
+                                {
+                                    foreach (var c in CarClasses)
+                                    {
+                                        <option value="@c.CarClassID">@c.CarClassName</option>
+                                    }
+                                }
+                            </InputSelect>
+                      </TemplateColumn>
+                        <PropertyColumn Property="@(c => c.RemoveFromViewFlag)" Title="Remove Flag" />
+                    </QuickGrid>
+                }
+            </div>
+        </section>
+
+        <section>
+            <h4>New Member Car</h4>
+            <div class="buttons-container d-flex">
+                <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px">Add Car</MudBlazor.MudButton>
+            </div>
+
+            <fieldset>
+                <div>
+                    <div class="new-member-car col-6">
+                        <div class="row-cols-2 d-flex">
+                            <label for="description" class="form-label col-2">Description:</label>
+                            <input class="form-control" type="text" id="description" />
+                        </div>
+                        <div class="row-cols-2 d-flex">
+                            <label for="serial-number" class="form-label col-2">Serial Number:</label>
+                            <input class="form-control" type="number" id="serial-number" />
+                        </div>
+
+                        <div class="row-cols-2 d-flex">
+                            <label for="ownership" class="form-label col-2">Ownership:</label>
+                            <select class="form-select form-control" id="ownership">
+                                <option selected value=""> Select . . .</option>
+                              @if (OwnershipDescriptions != null)
+                                {
+                                foreach (var description in OwnershipDescriptions)
+                                {
+                                <option value="@OwnershipDescriptions.IndexOf(description)">@description</option>
+                                }
+                                } 
+                            </select>
+                        </div>
+
+                        <div class="row-cols-2 d-flex">
+                            <label for="state" class="form-label col-2">State:</label>
+                            <select class="form-select form-control" id="state">
+                                <option selected value="0"> Select . . .</option>
+                                 @if (CarStates != null)
+                                {
+                                foreach (var state in CarStates)
+                                {
+                                <option value="@CarStates.IndexOf(state)">@state</option>
+                                }
+                                } 
+                            </select>
+                        </div>
+
+                        <div class="row-cols-2 d-flex">
+                            <label for="car-class" class="form-label col-2">Car Class:</label>
+                            <select class="form-select form-control" id="car-class">
+                                <option selected value="0"> Select . . .</option>
+                                @if (CarClasses != null)
+                                {
+                                    foreach (var c in CarClasses)
+                                    {
+                                        <option value="@c.CarClassID">@c.CarClassName</option>
+                                    }
+                                }                                 
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </section>
+    </body>
+</div>

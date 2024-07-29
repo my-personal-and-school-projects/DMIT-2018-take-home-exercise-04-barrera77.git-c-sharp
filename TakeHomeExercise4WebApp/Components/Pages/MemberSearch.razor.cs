@@ -9,7 +9,14 @@ namespace TakeHomeExercise4WebApp.Components.Pages
     public partial class MemberSearch
     {
         [Inject]
+
+        private ILogger<MemberSearch> Logger { get; set; }
+
+        [Inject]
         MemberListServices? MemberListServices { get; set; }
+
+        [Inject]
+        private NavigationManager _navManager { get; set; }
 
         private List<MemberListView> MemberList { get; set;}
 
@@ -32,6 +39,7 @@ namespace TakeHomeExercise4WebApp.Components.Pages
 
                 MemberList = await Task.Run(() => MemberListServices.GetMembersList(SearchParam));
                 ErrorMessage = null;
+
             }
             catch (ArgumentException ex)
             {
@@ -43,7 +51,19 @@ namespace TakeHomeExercise4WebApp.Components.Pages
             }
         }
 
+        private void OnNew(int memberId)
+        {
+            _navManager.NavigateTo($"Member/{memberId}");
+        }
+
+        private void OnEdit(int memberId)
+        {
+            Logger.LogInformation($"MemberID: {memberId}");
+            _navManager.NavigateTo($"Member/{memberId}");
+        }
+
         //Set pagination
         protected PaginationState Pagination = new PaginationState { ItemsPerPage = 10 };
     }
+   
 }

@@ -26,6 +26,7 @@ namespace TakeHomeExercise4System.BLL
                 .OrderBy(m => m.LastName)
                 .Select(m => new MemberListView
                 {
+                    MemberID = m.MemberId,
                     FirstName = m.FirstName,
                     LastName = m.LastName,
                     City = m.City,
