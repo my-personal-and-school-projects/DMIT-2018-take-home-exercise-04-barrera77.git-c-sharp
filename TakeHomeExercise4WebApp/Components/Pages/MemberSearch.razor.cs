@@ -9,7 +9,6 @@ namespace TakeHomeExercise4WebApp.Components.Pages
     public partial class MemberSearch
     {
         [Inject]
-
         private ILogger<MemberSearch> Logger { get; set; }
 
         [Inject]
@@ -32,10 +31,10 @@ namespace TakeHomeExercise4WebApp.Components.Pages
         {
             try
             {
-                if (string.IsNullOrEmpty(SearchParam) || !char.IsLetter(SearchParam[0]))
-                {
-                    throw new ArgumentException($"{SearchParam} is not valid lastName");
-                }
+                //if (string.IsNullOrEmpty(SearchParam) || !char.IsLetter(SearchParam[0]))
+                //{
+                //    throw new ArgumentException($"{SearchParam} is not valid lastName");
+                //}
 
                 MemberList = await Task.Run(() => MemberListServices.GetMembersList(SearchParam));
                 ErrorMessage = null;

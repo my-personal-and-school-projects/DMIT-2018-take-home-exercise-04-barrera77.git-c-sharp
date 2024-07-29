@@ -15,66 +15,64 @@
         }
         else
         {
-            <h4>@Member.LastName</h4>
+            <h4>@Member.LastName</h4>         
         }
-
        
     </header>
-
     <body>
         <section>
             <div class="buttons-container d-flex">
-                <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px">Save</MudBlazor.MudButton>
-                <MudBlazor.MudButton Class="btn btn-danger" Style="width: 90px">Cancel</MudBlazor.MudButton>
+                <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px" @onclick="OnSave">Save</MudBlazor.MudButton>
+                <MudBlazor.MudButton Class="btn btn-danger" Style="width: 90px" @onclick="OnCancel">Cancel</MudBlazor.MudButton>
             </div>
              <fieldset>
                 <div class="new-member-info row-cols-2">
                     <div class="col-left col-6">
                         <div class="row-cols-2 d-flex">
                             <label for="first-name" class="form-label col-2">First Name:</label>
-                            <InputText class="form-control" id="first-name" @bind-Value="@FirstName" />
+                            <InputText class="form-control" id="first-name" @bind-Value="@Member.FirstName" />
                         </div>
 
                         <div class="row-cols-2 d-flex">
                             <label for="last-name" class="form-label col-2">Last Name:</label>
-                            <InputText class="form-control" type="text" id="last-name" @bind-Value="@LastName" />
+                            <InputText class="form-control" type="text" id="last-name" @bind-Value="@Member.LastName" />
                         </div>
 
                         <div class="row-cols-2 d-flex">
                             <label for="address" class="form-label col-2">Address:</label>
-                            <InputText class="form-control" type="text" id="address" @bind-Value="@Address" />
+                            <InputText class="form-control" type="text" id="address" @bind-Value="@Member.Address" />
                         </div>
 
                         <div class="row-cols-2 d-flex">
                             <label for="city" class="form-label col-2">City:</label>
-                            <InputText class="form-control" type="text" id="city" @bind-Value="@City" />
+                            <InputText class="form-control" type="text" id="city" @bind-Value="@Member.City" />
                         </div>
 
                         <div class="row-cols-2 d-flex">
                             <label for="postal-code" class="form-label col-2">Postal Code:</label>
-                            <InputText class="form-control" type="text" id="postal-code" @bind-Value="@PostalCode" />
+                            <InputText class="form-control" type="text" id="postal-code" @bind-Value="@Member.PostalCode" />
                         </div>
                     </div>
 
                     <div class="col-right col-6">
                         <div class="row-cols-2 d-flex">
                             <label for="phone" class="form-label col-2">Phone:</label>
-                            <InputText class="form-control" type="text" id="phone" @bind-Value="@Phone"/>
+                            <InputText class="form-control" type="text" id="phone" @bind-Value="@Member.Phone" />
                         </div>
 
                         <div class="row-cols-2 d-flex">
                             <label for="email" class="form-label col-2">Email:</label>
-                            <InputText class="form-control" type="text" id="email" @bind-Value="@Email"/>
+                            <InputText class="form-control" type="text" id="email" @bind-Value="@Member.Email" />
                         </div>
 
                         <div class="row-cols-2 d-flex">
                             <label for="birth-date" class="form-label col-2">Birth Date:</label>
-                            <InputDate class="form-control" id="birth-date" @bind-Value="BirthDate"/>
+                            <InputDate class="form-control" id="birth-date" @bind-Value="Member.BirthDate" />
                         </div>
 
                         <div class="row-cols-2 d-flex">
                             <label for="certification" class="form-label col-2">Certification:</label>
-                            <InputSelect @bind-Value="@(Member.CertificationLevel)" class="form-select form-control" id="certification">
+                            <InputSelect @bind-Value="@(Member.Certification)" class="form-select form-control" id="certification">
                                 <option selected value=""> Select . . .</option>
 
                                 @if (certifications != null)
@@ -95,7 +93,7 @@
             <h4>Member Car(s)</h4>
 
             <div>
-                @if(MemberID == 0 || VehicleCount ==0)
+                @if (Member.MemberID == 0 || Member.VehicleCount == 0)
                 {
                     <table class="table table-striped">
                         <thead>
@@ -115,12 +113,12 @@
                 }
                 else
                 {
-                    <QuickGrid Items="Cars.AsQueryable()" Class="quickgrid-row-divider">
+                    <QuickGrid Items="Member.CarList.AsQueryable()" Class="quickgrid-row-divider">
                         <TemplateColumn>
                             <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px" >Remove</MudBlazor.MudButton>
                         </TemplateColumn>
-                        <PropertyColumn Property="@(c => c.CarId)" Title="CardID"/>
-                        <PropertyColumn Property="@(c => c.CarId)" Title="TempID"/>
+                        <PropertyColumn Property="@(c => c.CarID)" Title="CardID"/>
+                        <PropertyColumn Property="@(c => c.TempID)" Title="TempID"/>
                         <TemplateColumn Title="Description">
                             <InputText class="form-control" id="description" @bind-Value="context.Description" />
                         </TemplateColumn>
@@ -140,7 +138,7 @@
                         </TemplateColumn>
 
                       <TemplateColumn Title="State">
-                            <InputSelect class="form-select" @bind-Value="@context.State" id="state">
+                            <InputSelect class="form-select" @bind-Value="context.State" id="state">
                                 @if (CarStates != null)
                                 {
                                     foreach (var state in CarStates)
@@ -152,7 +150,7 @@
                       </TemplateColumn>
 
                       <TemplateColumn Title="Car Class">                            
-                            <InputSelect class="form-select" id="car-class" @bind-Value="context.CarClassId">
+                            <InputSelect class="form-select" id="car-class" @bind-Value="context.Class">
                                 @if (CarClasses != null)
                                 {
                                     foreach (var c in CarClasses)

@@ -17,30 +17,51 @@ namespace TakeHomeExercise4System.BLL
 
         public List<MemberListView> GetMembersList(string searchParam)
         {
-            if (string.IsNullOrWhiteSpace(searchParam) || !char.IsLetter(searchParam[0]))
+            if (string.IsNullOrWhiteSpace(searchParam) || searchParam == "")
             {
-                throw new ArgumentException($"{searchParam} is not valid lastName");
+                return _context.Members
+                    .OrderBy(m => m.LastName)
+                    .Select(m => new MemberListView
+                    {
+                        MemberID = m.MemberId,
+                        FirstName = m.FirstName,
+                        LastName = m.LastName,
+                        City = m.City,
+                        Phone = m.Phone,
+                        Email = m.EmailAddress,
+                        Certification = _context.Certifications
+                            .Where(c => c.CertificationLevel == m.CertificationLevel)
+                            .Select(c => c.Description)
+                            .FirstOrDefault(),
+                        VehicleCount = _context.Cars
+                            .Where(c => c.MemberId == m.MemberId)
+                            .Select(c => c.CarId).Count()
+                    })
+                    .ToList();
             }
-            return _context.Members
-                .Where(m => m.LastName.Contains(searchParam))
-                .OrderBy(m => m.LastName)
-                .Select(m => new MemberListView
-                {
-                    MemberID = m.MemberId,
-                    FirstName = m.FirstName,
-                    LastName = m.LastName,
-                    City = m.City,
-                    Phone = m.Phone,
-                    Email = m.EmailAddress,
-                    Certification = _context.Certifications
-                                    .Where(c => c.CertificationLevel == m.CertificationLevel)
-                                    .Select(c => c.Description)
-                                    .FirstOrDefault(),
-                    VehicleCount = _context.Cars
-                    .Where(c => c.MemberId == m.MemberId)
-                    .Select(c => c.CarId).Count()
-                })
-                .ToList();
+            else
+            {
+                return _context.Members
+                    .Where(m => m.LastName.Contains(searchParam))
+                    .OrderBy(m => m.LastName)
+                    .Select(m => new MemberListView
+                    {
+                        MemberID = m.MemberId,
+                        FirstName = m.FirstName,
+                        LastName = m.LastName,
+                        City = m.City,
+                        Phone = m.Phone,
+                        Email = m.EmailAddress,
+                        Certification = _context.Certifications
+                            .Where(c => c.CertificationLevel == m.CertificationLevel)
+                            .Select(c => c.Description)
+                            .FirstOrDefault(),
+                        VehicleCount = _context.Cars
+                            .Where(c => c.MemberId == m.MemberId)
+                            .Select(c => c.CarId).Count()
+                    })
+                    .ToList();
+            }
         }
     }
 }

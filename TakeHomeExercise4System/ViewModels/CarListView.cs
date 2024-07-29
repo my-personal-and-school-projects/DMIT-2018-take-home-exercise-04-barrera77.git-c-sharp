@@ -12,7 +12,7 @@ namespace TakeHomeExercise4System.ViewModels
         public int TempID { get; set; }
         public string SerialNumber { get; set; }
         public string Ownership { get; set; }
-        public string Class { get; set; }
+        public int Class { get; set; }
         public string State { get; set; }
         public string Description { get; set; }
         public int MemberID { get; set; }

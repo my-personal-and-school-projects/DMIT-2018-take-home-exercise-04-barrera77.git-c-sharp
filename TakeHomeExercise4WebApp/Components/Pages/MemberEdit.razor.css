@@ -47,13 +47,18 @@ section {
 }
 
 ::deep tbody tr {
-    height: 2rem;
+    height: 3.5rem;    
+
+}
+
+::deep table {
+    width: 90%;
 }
 
 ::deep thead th, thead td {
     border-bottom-width: 2px;
-}
 
+}
 
 .page-size-chooser {
     display: flex;
@@ -70,4 +75,6 @@ section {
     border: 1px solid #dee2e6;
     border-left: none;
     border-right: none;
+    
 }
+

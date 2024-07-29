@@ -13,78 +13,21 @@ namespace TakeHomeExercise4WebApp.Components.Pages
         private ILogger<MemberEdit> Logger { get; set; }
 
         [Inject]
+        private NavigationManager _navManager { get; set; }
+
+        [Inject]
         MemberEditServices MemberServices { get; set; }
 
         public List<CertificationsView> certifications { get; set; }
         public List<CarClassListView> CarClasses { get; set; }
-        private Member? Member { get; set; }
+        private MemberEditView Member { get; set; }
         public List<string> OwnershipDescriptions { get; set; } = new List<string>();
         public List<string> CarStates { get; set; } = new List<string>();
-
-        //public MemberListView Member { get; set; }
-
-        [Parameter]
-        public string CarClassName { get; set; }
-        [Parameter]
-        public int CarClassID { get; set; }
-
+                
         //Member properties
         [Parameter]
-        public int MemberID { get; set; } = 0;
+        public int MemberID { get; set; } = 0;       
 
-        [Parameter]
-        public string FirstName { get; set; }
-
-        [Parameter]
-        public string LastName { get; set; }
-
-        [Parameter]
-        public string Address { get; set; }
-
-        [Parameter]
-        public string City { get; set; }
-
-        [Parameter]
-        public string PostalCode { get; set; }
-
-        [Parameter]
-        public string Phone { get; set; }
-
-        [Parameter]
-        public DateTime BirthDate { get; set; }
-
-        [Parameter]
-        public string Email { get; set; }
-
-        [Parameter]
-        public int VehicleCount { get; set; } = 0;
-
-        //CarList properties
-        [Parameter]
-        public int CarID { get; set; }
-
-        [Parameter]
-        public int TempID { get; set; }
-
-        [Parameter]
-        public string Description { get; set; }
-
-        [Parameter]
-        public string SerialNumber { get; set; }
-
-        [Parameter]
-        public string Ownership { get; set; }
-
-        [Parameter]
-        public string State { get; set; }
-
-        [Parameter]
-        public string CarClass { get; set; }
-
-        [Parameter]
-        public bool RemoveFlag { get; set; }
-
-        public List<Car> Cars { get; set; } = new List<Car>();
 
         protected override async Task OnInitializedAsync()
         {
@@ -122,39 +65,35 @@ namespace TakeHomeExercise4WebApp.Components.Pages
             if (memberId > 0)
             {
                 Member = MemberServices.GetMemberById(memberId);
-
-                if (Member != null)
-                {
-                    // Set the properties based on the fetched member
-                    FirstName = Member.FirstName;
-                    LastName = Member.LastName;
-                    Address = Member.Address;
-                    City = Member.City;
-                    PostalCode = Member.PostalCode;
-                    Phone = Member.Phone;
-                    Email = Member.EmailAddress;
-                    BirthDate = Member.BirthDate;
-                    VehicleCount = Member.Cars.Count;
-                    Cars = Member.Cars.ToList(); 
-                    
-                    
-                }
+                Logger.LogWarning($"Member Car States: {string.Join(", ", Member.CarList.Select(c => c.State))}");
+                
             }
             else
             {
-                FirstName = string.Empty;
-                LastName = string.Empty;
-                Address = string.Empty;
-                City = string.Empty;
-                PostalCode = string.Empty;
-                Phone = string.Empty;
-                Email = string.Empty;
-                BirthDate = DateTime.Now;
-                
+                Member = new MemberEditView();
+                //Member.FirstName = string.Empty;
+                //Member.LastName = string.Empty;
+                //Member.Address = string.Empty;
+                //Member.City = string.Empty;
+                //Member.PostalCode = string.Empty;
+                //Member.Phone = string.Empty;
+                //Member.Email = string.Empty;
+                //Member.BirthDate = DateTime.Now;
+
             }
-           
+        } 
+        
+        private void OnCancel()
+        {
+            Member = new MemberEditView();
+            _navManager.NavigateTo("/MemberSearch");
         }
 
-    
+        private void OnSave()
+        {
+           
+            _navManager.NavigateTo("/MemberSearch");
+        }
+
     }
 }
