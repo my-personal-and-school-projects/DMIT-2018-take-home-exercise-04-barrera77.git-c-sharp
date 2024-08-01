@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TakeHomeExercise4System.BLL;
 using TakeHomeExercise4System.Entities;
 using TakeHomeExercise4System.ViewModels;
 using static MudBlazor.CategoryTypes;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
+using static MudBlazor.Icons;
 
 namespace TakeHomeExercise4WebApp.Components.Pages
 {
@@ -21,17 +25,24 @@ namespace TakeHomeExercise4WebApp.Components.Pages
 
         public List<CertificationsView> certifications { get; set; }
         public List<CarClassListView> CarClasses { get; set; }
+        public CarListView newCar { get; set; } = new CarListView();
         public MemberEditView Member { get; set; }
         public List<string> OwnershipDescriptions { get; set; } = new List<string>();
         public List<string> CarStates { get; set; } = new List<string>();
 
+        private EditContext editContext;
+
         //Member properties
         [Parameter]
         public int MemberID { get; set; } = 0;
+
+
         
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
+
+            editContext = new EditContext(newCar);
 
             //get certifications
             certifications = MemberServices.GetCertificationsList();
@@ -41,7 +52,7 @@ namespace TakeHomeExercise4WebApp.Components.Pages
             CarStates = new List<string>
             {
                 "Wrecked",
-                "In Shop",
+                "InShop",
                 "Certified",
                 "Unknown"
             };
@@ -91,7 +102,6 @@ namespace TakeHomeExercise4WebApp.Components.Pages
 
         private void OnSave()
         {
-
             _navManager.NavigateTo("/MemberSearch");
         }
 
@@ -131,6 +141,25 @@ namespace TakeHomeExercise4WebApp.Components.Pages
                
 
             }
+        }
+
+        private void OnAddvehicle(int memberId)
+        {
+            if (memberId == 0)
+            {
+                throw new ArgumentException("Member not found, cannot add car", new ArgumentException());
+            }
+
+            try
+            {
+                newCar = MemberServices.SaveCar(newCar);
+
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error removing car from view");
+            }
+
         }
 
 

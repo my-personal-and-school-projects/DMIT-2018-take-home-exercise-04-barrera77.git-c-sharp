@@ -168,53 +168,53 @@
 
         <section>
             <h4>New Member Car</h4>
-            <div class="buttons-container d-flex">
-                <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px">Add Car</MudBlazor.MudButton>
-            </div>
+            <EditForm EditContext="editContext">
+                <div class="buttons-container d-flex">
+                    <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px" OnClick="() => OnAddvehicle(MemberID)">Add Car</MudBlazor.MudButton>
+                </div>
 
-            <fieldset>
                 <div>
                     <div class="new-member-car col-6">
                         <div class="row-cols-2 d-flex">
                             <label for="description" class="form-label col-2">Description:</label>
-                            <input class="form-control" type="text" id="description" />
+                            <InputText class="form-control" type="text" id="description" @bind-Value="newCar.Description"/>
                         </div>
                         <div class="row-cols-2 d-flex">
                             <label for="serial-number" class="form-label col-2">Serial Number:</label>
-                            <input class="form-control" type="number" id="serial-number" />
+                            <InputText class="form-control" type="number" id="serial-number" @bind-Value="newCar.SerialNumber" />
                         </div>
 
                         <div class="row-cols-2 d-flex">
                             <label for="ownership" class="form-label col-2">Ownership:</label>
-                            <select class="form-select form-control" id="ownership">
+                            <InputSelect class="form-select form-control" id="ownership" @bind-Value="newCar.Ownership">
                                 <option selected value=""> Select . . .</option>
-                              @if (OwnershipDescriptions != null)
+                                @if (OwnershipDescriptions != null)
                                 {
-                                foreach (var description in OwnershipDescriptions)
-                                {
-                                <option value="@OwnershipDescriptions.IndexOf(description)">@description</option>
+                                    foreach (var description in OwnershipDescriptions)
+                                    {
+                                        <option value="@OwnershipDescriptions.IndexOf(description)">@description</option>
+                                    }
                                 }
-                                } 
-                            </select>
+                            </InputSelect>
                         </div>
 
                         <div class="row-cols-2 d-flex">
                             <label for="state" class="form-label col-2">State:</label>
-                            <select class="form-select form-control" id="state">
+                            <InputSelect class="form-select form-control" id="state" @bind-Value="newCar.State">
                                 <option selected value="0"> Select . . .</option>
-                                 @if (CarStates != null)
+                                @if (CarStates != null)
                                 {
-                                foreach (var state in CarStates)
-                                {
-                                <option value="@CarStates.IndexOf(state)">@state</option>
+                                    foreach (var state in CarStates)
+                                    {
+                                        <option value="@CarStates.IndexOf(state)">@state</option>
+                                    }
                                 }
-                                } 
-                            </select>
+                            </InputSelect>
                         </div>
 
                         <div class="row-cols-2 d-flex">
                             <label for="car-class" class="form-label col-2">Car Class:</label>
-                            <select class="form-select form-control" id="car-class">
+                            <InputSelect class="form-select form-control" id="car-class" @bind-Value="newCar.Class">
                                 <option selected value="0"> Select . . .</option>
                                 @if (CarClasses != null)
                                 {
@@ -222,12 +222,12 @@
                                     {
                                         <option value="@c.CarClassID">@c.CarClassName</option>
                                     }
-                                }                                 
-                            </select>
+                                }
+                            </InputSelect>
                         </div>
                     </div>
                 </div>
-            </fieldset>
+            </EditForm>   
         </section>
     </body>
 </div>

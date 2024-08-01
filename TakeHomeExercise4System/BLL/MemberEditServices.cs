@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TakeHomeExercise4System.Entities;
 using TakeHomeExercise4System.ViewModels;
+using static MudBlazor.Icons;
 
 namespace TakeHomeExercise4System.BLL
 {
@@ -19,6 +22,19 @@ namespace TakeHomeExercise4System.BLL
         {
             _context = context;
         }
+
+        #region Validation
+        private string feedbackMessage;
+        private string errorMessage;
+        private bool hasFeedback => !string.IsNullOrWhiteSpace(feedbackMessage);
+        private bool hasError => !string.IsNullOrWhiteSpace(errorMessage);
+        #endregion
+
+        [Inject]
+        private ILogger<MemberEditServices> Logger { get; set; }
+
+        //Create an array to store the errors
+        List<Exception> errorList = new List<Exception>();
 
         /// <summary>
         /// Get a list of the membercertification for the dropdown list
@@ -125,7 +141,7 @@ namespace TakeHomeExercise4System.BLL
         {
             if(carId == 0)
             {
-                throw new ArgumentNullException("Car cannot be null", new ArgumentNullException());
+                throw new ArgumentNullException("CarId cannot be null or 0", new ArgumentNullException());
             }
 
             var car = _context.Cars
@@ -137,6 +153,53 @@ namespace TakeHomeExercise4System.BLL
             }
             car.RemoveFromViewFlag = true;
             UpdateEntity(car);
+        }
+
+       public CarListView SaveCar(CarListView editCar)
+        {
+            if (editCar == null)
+            {
+                throw new ArgumentNullException("No vehicle was supplied!");
+            }
+
+            ValidateFields(editCar);
+
+            if(errorList.Count < 0)
+            {
+                throw new AggregateException
+                    ("Please check error message(s): ", errorList);
+            }
+
+            Car car = _context.Cars
+                    .Where(car => car.CarId == editCar.CarID)
+                    .Select(car => car).FirstOrDefault();
+
+            if (car == null)
+            {
+                car = new Car();
+            }
+
+            car.Description = editCar.Description;
+            car.SerialNumber = editCar.SerialNumber;
+            car.Ownership = editCar.Ownership;
+            car.State = editCar.State;
+            car.CarClassId = editCar.Class;
+
+            if (errorList.Count > 0)
+            {
+                _context.ChangeTracker.Clear();
+
+                throw new AggregateException
+                    ("Please check error message(s): ", errorList);
+            }
+            else
+            {
+                _context.Cars.Add(car); 
+            }
+
+            editCar.CarID = car.CarId;
+            return editCar;
+
         }
 
         private void UpdateCar(Car car)
@@ -177,5 +240,35 @@ namespace TakeHomeExercise4System.BLL
         //}
 
 
+        private void ValidateFields(CarListView car)
+        {
+            if (String.IsNullOrWhiteSpace(car.Description))
+            {
+                errorList.Add(new Exception("Description is required!"));
+            }
+
+            if (String.IsNullOrWhiteSpace(car.SerialNumber))
+            {
+                errorList.Add(new Exception("SerialNumber is required!"));
+            }
+
+            if (String.IsNullOrWhiteSpace(car.Ownership))
+            {
+                errorList.Add(new Exception("Ownership is required!"));
+            }
+
+            if (String.IsNullOrWhiteSpace(car.State))
+            {
+                errorList.Add(new Exception("Car State is required!"));
+            }
+
+            if (car.Class == 0)
+            {
+                errorList.Add(new Exception("Car class is required!"));
+            }
+        }
+
     }
+
+    
 }
