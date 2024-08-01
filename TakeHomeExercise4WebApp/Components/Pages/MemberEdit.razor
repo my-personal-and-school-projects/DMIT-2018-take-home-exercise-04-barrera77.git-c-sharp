@@ -115,7 +115,7 @@
                 {
                     <QuickGrid Items="Member.CarList.AsQueryable()" Class="quickgrid-row-divider">
                         <TemplateColumn>
-                            <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px" >Remove</MudBlazor.MudButton>
+                            <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px" @onclick="@(() => OnRemoveVehicle(context.CarID))">Remove</MudBlazor.MudButton>
                         </TemplateColumn>
                         <PropertyColumn Property="@(c => c.CarID)" Title="CardID"/>
                         <PropertyColumn Property="@(c => c.TempID)" Title="TempID"/>
@@ -160,7 +160,7 @@
                                 }
                             </InputSelect>
                       </TemplateColumn>
-                        <PropertyColumn Property="@(c => c.RemoveFromViewFlag)" Title="Remove Flag" />
+                    <PropertyColumn Property="@(c => c.RemoveFromViewFlag)" Title="Remove Flag" />
                     </QuickGrid>
                 }
             </div>

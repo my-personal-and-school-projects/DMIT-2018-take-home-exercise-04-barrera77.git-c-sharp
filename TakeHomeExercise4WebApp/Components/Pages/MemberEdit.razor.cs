@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using TakeHomeExercise4System.BLL;
 using TakeHomeExercise4System.Entities;
 using TakeHomeExercise4System.ViewModels;
+using static MudBlazor.CategoryTypes;
 
 namespace TakeHomeExercise4WebApp.Components.Pages
 {
@@ -20,15 +21,14 @@ namespace TakeHomeExercise4WebApp.Components.Pages
 
         public List<CertificationsView> certifications { get; set; }
         public List<CarClassListView> CarClasses { get; set; }
-        private MemberEditView Member { get; set; }
+        public MemberEditView Member { get; set; }
         public List<string> OwnershipDescriptions { get; set; } = new List<string>();
         public List<string> CarStates { get; set; } = new List<string>();
-                
+
         //Member properties
         [Parameter]
-        public int MemberID { get; set; } = 0;       
-
-
+        public int MemberID { get; set; } = 0;
+        
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
@@ -66,7 +66,7 @@ namespace TakeHomeExercise4WebApp.Components.Pages
             {
                 Member = MemberServices.GetMemberById(memberId);
                 Logger.LogWarning($"Member Car States: {string.Join(", ", Member.CarList.Select(c => c.State))}");
-                
+
             }
             else
             {
@@ -81,8 +81,8 @@ namespace TakeHomeExercise4WebApp.Components.Pages
                 //Member.BirthDate = DateTime.Now;
 
             }
-        } 
-        
+        }
+
         private void OnCancel()
         {
             Member = new MemberEditView();
@@ -91,9 +91,48 @@ namespace TakeHomeExercise4WebApp.Components.Pages
 
         private void OnSave()
         {
-           
+
             _navManager.NavigateTo("/MemberSearch");
         }
+
+        //private async Task OnRemoveVehicle(Car car)
+        //{
+        //    if (car != null) 
+        //    {
+        //        try
+        //        {
+        //            await Task.Run(() => MemberServices.RemoveCarFromView(car));
+        //            Logger.LogInformation($"Removed car from view: {car.CarId}");
+
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Logger.LogError(ex, "Error removing car from view");                    
+        //        }
+        //    }
+        //}
+
+        private void OnRemoveVehicle(int carId)
+        {
+            if (carId != 0)
+            {
+                try
+                {
+                    MemberServices.RemoveCarFromView(carId);
+                    Logger.LogInformation($"Removed car from view: {carId}");
+
+                    // refresh or update the car list
+                    Member = MemberServices.GetMemberById(MemberID);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "Error removing car from view");
+                }
+               
+
+            }
+        }
+
 
     }
 }

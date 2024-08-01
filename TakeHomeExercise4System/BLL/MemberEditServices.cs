@@ -82,7 +82,7 @@ namespace TakeHomeExercise4System.BLL
                     Certification = m.CertificationLevel,
                     VehicleCount = m.Cars.Count(),
                     CarList = _context.Cars
-                            .Where(c => c.MemberId == memberId)
+                            .Where(c => c.MemberId == memberId && c.RemoveFromViewFlag == false)
                             .OrderByDescending(c => c.CarClassId)
                             .Select(c => new CarListView
                             {
@@ -93,8 +93,8 @@ namespace TakeHomeExercise4System.BLL
                                 Class = c.CarClassId,
                                 State = c.State,
                                 Description = c.Description,
-                                MemberID = m.MemberId,
-                                RemoveFromViewFlag = m.RemoveFromViewFlag,  
+                                MemberID = c.MemberId,
+                                RemoveFromViewFlag = c.RemoveFromViewFlag,  
                             }).ToList()
                 })
                 .FirstOrDefault();           
@@ -121,13 +121,20 @@ namespace TakeHomeExercise4System.BLL
         /// </summary>
         /// <param name="car"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        private void RemoveCarFromView(Car car)
+        public void RemoveCarFromView(int carId)
         {
-            if(car == null)
+            if(carId == 0)
             {
                 throw new ArgumentNullException("Car cannot be null", new ArgumentNullException());
             }
 
+            var car = _context.Cars
+                .FirstOrDefault(c => c.CarId == carId);
+
+            if (car == null)
+            {
+                throw new InvalidOperationException("Car not found");
+            }
             car.RemoveFromViewFlag = true;
             UpdateEntity(car);
         }
@@ -145,9 +152,7 @@ namespace TakeHomeExercise4System.BLL
             {
                 throw new ArgumentException("Car not found", new ArgumentException());
             }
-
-
-
+          
         }
 
         //public Member? GetMemberById(int memberId)
