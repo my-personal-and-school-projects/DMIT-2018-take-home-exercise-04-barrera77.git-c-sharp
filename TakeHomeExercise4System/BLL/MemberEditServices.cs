@@ -344,6 +344,25 @@ namespace TakeHomeExercise4System.BLL
         //    return member;
         //}
 
+
+        private void ValidateCars(List<CarListView> carList)
+        {
+            if (carList == null) return;
+
+            var serialNumbers = new HashSet<string>();
+
+            foreach (var car in carList)
+            {
+                ValidateNewCarFields(car); // Correctly pass each CarListView object
+
+                if (string.IsNullOrWhiteSpace(car.SerialNumber))
+                    errorList.Add(new Exception("Serial Number is required!"));
+
+                if (!serialNumbers.Add(car.SerialNumber))
+                    errorList.Add(new Exception("Serial Number must be unique!"));
+            }
+        }
+
     }
 
 
