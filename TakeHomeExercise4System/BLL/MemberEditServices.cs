@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -202,6 +203,13 @@ namespace TakeHomeExercise4System.BLL
             return carView;
         }
 
+        public MemberEditView EditMember(MemberEditView memberEdit)
+        {
+
+
+            return memberEdit;
+        }
+
         private void UpdateCar(Car car)
         {
             if (car == null)
@@ -244,6 +252,73 @@ namespace TakeHomeExercise4System.BLL
             {
                 errorList.Add(new Exception("Car class is required!"));
             }
+        }
+
+        private void ValidateEditMemberFields(MemberEditView member)
+        {
+            if(String.IsNullOrWhiteSpace(member.FirstName))
+            {
+                errorList.Add(new Exception("First name is required!"));
+            }
+
+            if (String.IsNullOrWhiteSpace(member.LastName))
+            {
+                errorList.Add(new Exception("Last name is required!"));
+            }
+
+            if (String.IsNullOrWhiteSpace(member.Address))
+            {
+                errorList.Add(new Exception("Address is required!"));
+            }
+
+            if (String.IsNullOrWhiteSpace(member.City))
+            {
+                errorList.Add(new Exception("City is required!"));
+            }
+
+            if (String.IsNullOrWhiteSpace(member.PostalCode))
+            {
+                errorList.Add(new Exception("PostalCode is required!"));
+            }
+
+            if (String.IsNullOrWhiteSpace(member.Phone))
+            {
+                errorList.Add(new Exception("Phone is required!"));
+            }
+
+            if (String.IsNullOrWhiteSpace(member.Email))
+            {
+                errorList.Add(new Exception("Email is required!"));
+            }
+
+            if (String.IsNullOrWhiteSpace(member.Certification))
+            {
+                errorList.Add(new Exception("Certification is required!"));
+            }
+
+            if (!IsValidAge(member.BirthDate))
+            {
+                errorList.Add(new Exception("Member should be at least 18 and less than 100 years old "));
+            }
+
+            List<CarListView> carList = member.CarList;
+
+
+            //Validate CarListViw fields
+            //ValidateNewCarFields(carList);
+
+        }
+
+        /// <summary>
+        /// Checks for a valid date, if the member is 18+ < 100
+        /// </summary>
+        /// <param name="birthDate"></param>
+        /// <returns>Age validation</returns>
+        private bool IsValidAge(DateTime birthDate)
+        {
+            int age = DateTime.Today.Year - birthDate.Year;
+            if (birthDate.Date > DateTime.Today.AddYears(-age)) age--;
+            return age >= 18 && age <= 100;
         }
 
 
