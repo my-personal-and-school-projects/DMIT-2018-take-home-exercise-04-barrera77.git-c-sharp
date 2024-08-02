@@ -1,13 +1,16 @@
-﻿<BlazorDialog.DialogHeader ShowClose="true">
-    <h4>@Input</h4>
-</BlazorDialog.DialogHeader>
-<BlazorDialog.DialogBody>
+﻿@using BlazorDialog;
+
+
+<DialogHeader ShowClose="true">
+        <h4>@Input</h4>
+</DialogHeader>
+<DialogBody>
     <p>@BodyText</p>
-</BlazorDialog.DialogBody>
-<BlazorDialog.DialogFooter>
+</DialogBody>
+<DialogFooter>
     <button type="button" class="btn btn-primary" @onclick="@(()=> Dialog.Hide("Ok"))">Ok</button>
     <button type="button" class="btn btn-secondary" @onclick="@(()=> Dialog.Hide("Cancel"))">Cancel</button>
-</BlazorDialog.DialogFooter>
+</DialogFooter>
 
 @code {
     [CascadingParameter(Name = "ParentDialog")] BlazorDialog.Dialog Dialog { get; set; }

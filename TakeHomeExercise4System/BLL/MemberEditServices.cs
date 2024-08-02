@@ -175,11 +175,6 @@ namespace TakeHomeExercise4System.BLL
             }
 
             #endregion
-
-            //Car car = _context.Cars
-            //        .Where(car => car.CarId == editCar.CarID)
-            //        .Select(car => car).FirstOrDefault();
-
           
                 Car car = new Car();
 
@@ -190,8 +185,6 @@ namespace TakeHomeExercise4System.BLL
             car.CarClassId = carView.Class;
             car.MemberId = memberID;
 
-            //Logger.LogError($"New car ownership: {car.Description}");
-
             if (errorList.Count > 0)
             {
                 _context.ChangeTracker.Clear();
@@ -201,7 +194,6 @@ namespace TakeHomeExercise4System.BLL
             }
             else
             {             
-
                 _context.Cars.Add(car);
                 _context.SaveChanges();
             }

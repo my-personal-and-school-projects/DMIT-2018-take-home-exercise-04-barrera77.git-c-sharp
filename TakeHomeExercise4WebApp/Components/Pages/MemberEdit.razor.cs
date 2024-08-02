@@ -118,8 +118,6 @@ namespace TakeHomeExercise4WebApp.Components.Pages
             }
         }
 
-        
-
         private void EditContext_OnValidationRequested(object? sender, ValidationRequestedEventArgs e)
         {
             messageStore?.Clear();
@@ -150,7 +148,6 @@ namespace TakeHomeExercise4WebApp.Components.Pages
             }
         }
 
-
         /// <summary>
         /// Display the fetched member info if OnEdit or display an empty form if OnNew
         /// </summary>
@@ -160,7 +157,6 @@ namespace TakeHomeExercise4WebApp.Components.Pages
             if (memberId > 0)
             {
                 Member = MemberServices.GetMemberById(memberId);
-                Logger.LogWarning($"Member Car States: {string.Join(", ", Member.CarList.Select(c => c.State))}");
             }
             else
             {
@@ -181,8 +177,7 @@ namespace TakeHomeExercise4WebApp.Components.Pages
              
         private async Task OnRemoveVehicle(int carId)
         {
-                Logger.LogInformation("OnRemoveVehicle method triggered with CarID: {CarId}", carId);
-            string bodyText = $"Are you sure you wish to remove the car num:{newCar.CarID} from the list?";
+            string bodyText = $"Are you sure you want to remove the car from the list?";
 
             string dialogResult = await BlazorDialogService.ShowComponentAsDialog<string>(
                 new ComponentAsDialogOptions(typeof(SimpleComponentDialog))
@@ -197,34 +192,22 @@ namespace TakeHomeExercise4WebApp.Components.Pages
 
             if (dialogResult == "Ok")
             {
-
                 if (carId != 0)
                 {
                     try
                     {
-                        Logger.LogInformation("Attempting to save the new car with details: {@NewCar}", newCar);
                         MemberServices.RemoveCarFromView(carId);
-
-
+                                              
                         // refresh or update the car list
                         Member = MemberServices.GetMemberById(MemberID);
-
-                        Logger.LogInformation("New car saved successfully. Car details: {@NewCar}", newCar);
                     }
                     catch (Exception ex)
                     {
                         errorMessage = BlazorHelperClass.GetInnerException(ex).Message;
-                        Logger.LogError(ex, "Error removing car from view");
                     }
                     await InvokeAsync(StateHasChanged);
-
-
                 }
-
             }
-          
-
-
         }
 
         private void OnAddvehicle(int memberId)
@@ -236,11 +219,12 @@ namespace TakeHomeExercise4WebApp.Components.Pages
             try
             {
                 newCar = MemberServices.SaveCar(newCar, memberId);
-
-                Logger.LogInformation($"New car ownership: {newCar.Ownership}" );
-
-                // refresh or update the car list
+               
+                //Update the car list
                 Member = MemberServices.GetMemberById(MemberID);
+
+                //Reset Form
+                ResetNewCarFormFields();
 
                 feedbackMessage = "Vehicle added succesfully";               
 
@@ -266,6 +250,15 @@ namespace TakeHomeExercise4WebApp.Components.Pages
             {
                 errorMessage = BlazorHelperClass.GetInnerException(ex).Message;
             }
+        }
+
+        private void ResetNewCarFormFields()
+        {           
+            newCar.Description = string.Empty;
+            newCar.SerialNumber = string.Empty;
+            newCar.Ownership = string.Empty;
+            newCar.State = "0";
+            newCar.Class = 0;
         }
     }
 }
