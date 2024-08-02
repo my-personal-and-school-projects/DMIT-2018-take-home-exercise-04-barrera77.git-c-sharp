@@ -3,6 +3,7 @@
 <PageTitle>Member Edit</PageTitle>
 
 @using Microsoft.AspNetCore.Components.QuickGrid;
+@using BlazorDialog;
 
 <h3>Member Edit</h3>
 
@@ -117,7 +118,7 @@
                         <TemplateColumn>
                             <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px" @onclick="@(() => OnRemoveVehicle(context.CarID))">Remove</MudBlazor.MudButton>
                         </TemplateColumn>
-                        <PropertyColumn Property="@(c => c.CarID)" Title="CardID"/>
+                        <PropertyColumn Property="@(c => c.CarID)" Title="CarID"/>
                         <PropertyColumn Property="@(c => c.TempID)" Title="TempID"/>
                         <TemplateColumn Title="Description">
                             <InputText class="form-control" id="description" @bind-Value="context.Description" />
@@ -169,6 +170,7 @@
         <section>
             <h4>New Member Car</h4>
             <EditForm EditContext="editContext">
+                <DataAnnotationsValidator />
                 <div class="buttons-container d-flex">
                     <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px" OnClick="() => OnAddvehicle(MemberID)">Add Car</MudBlazor.MudButton>
                 </div>
@@ -177,11 +179,13 @@
                     <div class="new-member-car col-6">
                         <div class="row-cols-2 d-flex">
                             <label for="description" class="form-label col-2">Description:</label>
-                            <InputText class="form-control" type="text" id="description" @bind-Value="newCar.Description"/>
+                            <InputText class="form-control" type="text" id="description" @bind-Value="newCar.Description" />
+                            <ValidationMessage For="() => newCar.Description"/>
                         </div>
                         <div class="row-cols-2 d-flex">
                             <label for="serial-number" class="form-label col-2">Serial Number:</label>
-                            <InputText class="form-control" type="number" id="serial-number" @bind-Value="newCar.SerialNumber" />
+                            <InputText class="form-control" type="text" id="serial-number" @bind-Value="newCar.SerialNumber" />
+                            <ValidationMessage For="() => newCar.SerialNumber" />
                         </div>
 
                         <div class="row-cols-2 d-flex">
@@ -192,7 +196,7 @@
                                 {
                                     foreach (var description in OwnershipDescriptions)
                                     {
-                                        <option value="@OwnershipDescriptions.IndexOf(description)">@description</option>
+                                        <option value="@description">@description</option>
                                     }
                                 }
                             </InputSelect>
@@ -206,7 +210,7 @@
                                 {
                                     foreach (var state in CarStates)
                                     {
-                                        <option value="@CarStates.IndexOf(state)">@state</option>
+                                        <option value="@state">@state</option>
                                     }
                                 }
                             </InputSelect>
@@ -230,4 +234,26 @@
             </EditForm>   
         </section>
     </body>
+    <footer>
+        @if (hasFeedback)
+        {
+            <div class="alert alert-info fw-bold">@feedbackMessage</div>
+        }
+
+        @if (hasError)
+        {
+            <div class="alert alert-danger ">
+
+                @errorMessage
+                <ul>
+                    @foreach (string detail in errorDetails)
+                    {
+                        <li>@detail</li>
+                    }
+                </ul>
+
+            </div>
+
+        }
+    </footer>
 </div>

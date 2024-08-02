@@ -1,27 +1,51 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using TakeHomeExercise4System.BLL;
-using TakeHomeExercise4System.Entities;
 using TakeHomeExercise4System.ViewModels;
-using static MudBlazor.CategoryTypes;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
+using MudBlazor;
 using static MudBlazor.Icons;
+using BlazorDialog;
+
 
 namespace TakeHomeExercise4WebApp.Components.Pages
 {
     public partial class MemberEdit
     {
+        #region Properties
         [Inject]
         private ILogger<MemberEdit> Logger { get; set; }
+
+        [Inject]
+        protected IDialogService DialogService { get; set; }
+
+        [Inject]
+        protected IBlazorDialogService BlazorDialogService { get; set; }
 
         [Inject]
         private NavigationManager _navManager { get; set; }
 
         [Inject]
         MemberEditServices MemberServices { get; set; }
+
+        //Member properties
+        [Parameter]
+        public int MemberID { get; set; } = 0;
+
+        #endregion
+
+        #region Feedback and Error Messaging
+
+        private string feedbackMessage;
+        private string errorMessage;
+
+        private bool hasFeedback => !string.IsNullOrWhiteSpace(feedbackMessage);
+        private bool hasError => !string.IsNullOrWhiteSpace(errorMessage);
+
+        private List<string> errorDetails = new List<string>();
+
+        #endregion
+
+        #region Fields
 
         public List<CertificationsView> certifications { get; set; }
         public List<CarClassListView> CarClasses { get; set; }
@@ -30,42 +54,102 @@ namespace TakeHomeExercise4WebApp.Components.Pages
         public List<string> OwnershipDescriptions { get; set; } = new List<string>();
         public List<string> CarStates { get; set; } = new List<string>();
 
+        #endregion
+
+        #region Validation
+
         private EditContext editContext;
+        private ValidationMessageStore messageStore;
 
-        //Member properties
-        [Parameter]
-        public int MemberID { get; set; } = 0;
+        #endregion
 
 
-        
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
 
-            editContext = new EditContext(newCar);
-
-            //get certifications
-            certifications = MemberServices.GetCertificationsList();
-            //get car classes
-            CarClasses = MemberServices.GetCarClasses();
-            //Get car states
-            CarStates = new List<string>
+           try
             {
-                "Wrecked",
-                "InShop",
-                "Certified",
-                "Unknown"
-            };
-            //get car ownership descriptions
-            OwnershipDescriptions = new List<string>
-            {
-                "Rental",
-                "Owner"
-            };
+                editContext = new EditContext(newCar);
 
-            //Display member info
-            DisplayMemberInfo(MemberID);
+                //get certifications
+                certifications = MemberServices.GetCertificationsList();
+                //get car classes
+                CarClasses = MemberServices.GetCarClasses();
+                //Get car states
+                CarStates = new List<string>
+                {
+                    "Wrecked",
+                    "InShop",
+                    "Certified",
+                    "Unknown"
+                };
+                //get car ownership descriptions
+                OwnershipDescriptions = new List<string>
+                {
+                    "Rental",
+                    "Owner"
+                };
+
+                //Display member info
+                DisplayMemberInfo(MemberID);
+
+            }
+            catch (AggregateException ex)
+            {
+                if (!string.IsNullOrWhiteSpace(errorMessage))
+                {
+                    errorMessage += Environment.NewLine;
+                }
+
+                foreach (Exception error in ex.InnerExceptions)
+                {
+                    errorDetails.Add(error.Message);
+                }
+            }
+            catch (ArgumentNullException ex) 
+            {
+                errorMessage = BlazorHelperClass.GetInnerException(ex).Message;
+
+            }
+            catch (Exception ex)
+            {
+                errorMessage = BlazorHelperClass.GetInnerException(ex).Message;
+            }
         }
+
+        
+
+        private void EditContext_OnValidationRequested(object? sender, ValidationRequestedEventArgs e)
+        {
+            messageStore?.Clear();
+
+            if (String.IsNullOrWhiteSpace(newCar.Description))
+            {
+                messageStore.Add(() => newCar.Description, "Description is required!");
+            }
+
+            if (String.IsNullOrWhiteSpace(newCar.SerialNumber))
+            {
+                messageStore.Add(() => newCar.SerialNumber, "SerialNumber is required!");
+            }
+
+            if (String.IsNullOrWhiteSpace(newCar.Ownership))
+            {
+                messageStore.Add(() => newCar.Ownership, "Ownership is required!");
+            }
+
+            if (String.IsNullOrWhiteSpace(newCar.State))
+            {
+                messageStore.Add(() => newCar.State, "Car state is required!");
+            }
+
+            if (newCar.Class == 0)
+            {
+                messageStore.Add(() => newCar.Class, "Car class is required!");
+            }
+        }
+
 
         /// <summary>
         /// Display the fetched member info if OnEdit or display an empty form if OnNew
@@ -77,20 +161,10 @@ namespace TakeHomeExercise4WebApp.Components.Pages
             {
                 Member = MemberServices.GetMemberById(memberId);
                 Logger.LogWarning($"Member Car States: {string.Join(", ", Member.CarList.Select(c => c.State))}");
-
             }
             else
             {
                 Member = new MemberEditView();
-                //Member.FirstName = string.Empty;
-                //Member.LastName = string.Empty;
-                //Member.Address = string.Empty;
-                //Member.City = string.Empty;
-                //Member.PostalCode = string.Empty;
-                //Member.Phone = string.Empty;
-                //Member.Email = string.Empty;
-                //Member.BirthDate = DateTime.Now;
-
             }
         }
 
@@ -104,64 +178,94 @@ namespace TakeHomeExercise4WebApp.Components.Pages
         {
             _navManager.NavigateTo("/MemberSearch");
         }
-
-        //private async Task OnRemoveVehicle(Car car)
-        //{
-        //    if (car != null) 
-        //    {
-        //        try
-        //        {
-        //            await Task.Run(() => MemberServices.RemoveCarFromView(car));
-        //            Logger.LogInformation($"Removed car from view: {car.CarId}");
-
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            Logger.LogError(ex, "Error removing car from view");                    
-        //        }
-        //    }
-        //}
-
-        private void OnRemoveVehicle(int carId)
+             
+        private async Task OnRemoveVehicle(int carId)
         {
-            if (carId != 0)
-            {
-                try
-                {
-                    MemberServices.RemoveCarFromView(carId);
-                    Logger.LogInformation($"Removed car from view: {carId}");
+                Logger.LogInformation("OnRemoveVehicle method triggered with CarID: {CarId}", carId);
+            string bodyText = $"Are you sure you wish to remove the car num:{newCar.CarID} from the list?";
 
-                    // refresh or update the car list
-                    Member = MemberServices.GetMemberById(MemberID);
-                }
-                catch (Exception ex)
+            string dialogResult = await BlazorDialogService.ShowComponentAsDialog<string>(
+                new ComponentAsDialogOptions(typeof(SimpleComponentDialog))
                 {
-                    Logger.LogError(ex, "Error removing car from view");
+                    Size = DialogSize.Normal,
+                    Parameters = new()
+                        {
+                            { nameof(SimpleComponentDialog.Input), "Remove Car" },
+                            { nameof(SimpleComponentDialog.BodyText), bodyText }
+                        }
+                });
+
+            if (dialogResult == "Ok")
+            {
+
+                if (carId != 0)
+                {
+                    try
+                    {
+                        Logger.LogInformation("Attempting to save the new car with details: {@NewCar}", newCar);
+                        MemberServices.RemoveCarFromView(carId);
+
+
+                        // refresh or update the car list
+                        Member = MemberServices.GetMemberById(MemberID);
+
+                        Logger.LogInformation("New car saved successfully. Car details: {@NewCar}", newCar);
+                    }
+                    catch (Exception ex)
+                    {
+                        errorMessage = BlazorHelperClass.GetInnerException(ex).Message;
+                        Logger.LogError(ex, "Error removing car from view");
+                    }
+                    await InvokeAsync(StateHasChanged);
+
+
                 }
-               
 
             }
+          
+
+
         }
 
         private void OnAddvehicle(int memberId)
         {
-            if (memberId == 0)
-            {
-                throw new ArgumentException("Member not found, cannot add car", new ArgumentException());
-            }
-
+            errorDetails.Clear();
+            errorMessage = string.Empty;
+            feedbackMessage = string.Empty;
+           
             try
             {
-                newCar = MemberServices.SaveCar(newCar);
+                newCar = MemberServices.SaveCar(newCar, memberId);
 
+                Logger.LogInformation($"New car ownership: {newCar.Ownership}" );
+
+                // refresh or update the car list
+                Member = MemberServices.GetMemberById(MemberID);
+
+                feedbackMessage = "Vehicle added succesfully";               
+
+            }
+            catch (AggregateException ex)
+            {
+                if (!string.IsNullOrWhiteSpace(errorMessage))
+                {
+                    errorMessage += Environment.NewLine;
+                }
+
+                errorMessage += "Unable to add a vehicle!";
+                foreach (Exception error in ex.InnerExceptions)
+                {
+                    errorDetails.Add(error.Message);
+                }
+            }
+            catch (ArgumentNullException ex)
+            {
+                errorMessage = BlazorHelperClass.GetInnerException(ex).Message;
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Error removing car from view");
+                errorMessage = BlazorHelperClass.GetInnerException(ex).Message;
             }
-
         }
-
-
     }
 }

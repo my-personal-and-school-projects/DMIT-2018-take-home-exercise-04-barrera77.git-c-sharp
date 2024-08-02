@@ -78,3 +78,9 @@ section {
     
 }
 
+::deep #description, ::deep #serial-number {
+    max-width: 60%;
+}
+
+
+

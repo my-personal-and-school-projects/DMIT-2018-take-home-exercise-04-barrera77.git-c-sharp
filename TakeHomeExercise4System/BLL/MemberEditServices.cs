@@ -155,35 +155,42 @@ namespace TakeHomeExercise4System.BLL
             UpdateEntity(car);
         }
 
-       public CarListView SaveCar(CarListView editCar)
+       public CarListView SaveCar(CarListView carView, int memberID)
         {
-            if (editCar == null)
+            #region Business Logic and Parameter Exceptions
+
+            errorList.Clear();
+            
+            if (carView == null)
             {
                 throw new ArgumentNullException("No vehicle was supplied!");
             }
 
-            ValidateFields(editCar);
+            ValidateNewCarFields(carView);
 
-            if(errorList.Count < 0)
+            if(errorList.Count > 0)
             {
                 throw new AggregateException
                     ("Please check error message(s): ", errorList);
             }
 
-            Car car = _context.Cars
-                    .Where(car => car.CarId == editCar.CarID)
-                    .Select(car => car).FirstOrDefault();
+            #endregion
 
-            if (car == null)
-            {
-                car = new Car();
-            }
+            //Car car = _context.Cars
+            //        .Where(car => car.CarId == editCar.CarID)
+            //        .Select(car => car).FirstOrDefault();
 
-            car.Description = editCar.Description;
-            car.SerialNumber = editCar.SerialNumber;
-            car.Ownership = editCar.Ownership;
-            car.State = editCar.State;
-            car.CarClassId = editCar.Class;
+          
+                Car car = new Car();
+
+            car.Description = carView.Description;
+            car.SerialNumber = carView.SerialNumber;
+            car.Ownership = carView.Ownership;
+            car.State = carView.State;
+            car.CarClassId = carView.Class;
+            car.MemberId = memberID;
+
+            //Logger.LogError($"New car ownership: {car.Description}");
 
             if (errorList.Count > 0)
             {
@@ -193,13 +200,14 @@ namespace TakeHomeExercise4System.BLL
                     ("Please check error message(s): ", errorList);
             }
             else
-            {
-                _context.Cars.Add(car); 
+            {             
+
+                _context.Cars.Add(car);
+                _context.SaveChanges();
             }
 
-            editCar.CarID = car.CarId;
-            return editCar;
-
+            carView.CarID = car.CarId;
+            return carView;
         }
 
         private void UpdateCar(Car car)
@@ -217,6 +225,36 @@ namespace TakeHomeExercise4System.BLL
             }
           
         }
+
+        private void ValidateNewCarFields(CarListView car)
+        {
+            if (String.IsNullOrWhiteSpace(car.Description))
+            {
+                errorList.Add(new Exception("Description is required!"));
+            }
+
+            if (String.IsNullOrWhiteSpace(car.SerialNumber))
+            {
+                errorList.Add(new Exception("SerialNumber is required!"));
+            }
+
+            if (String.IsNullOrWhiteSpace(car.Ownership))
+            {
+                errorList.Add(new Exception("Ownership is required!"));
+            }
+
+            if (String.IsNullOrWhiteSpace(car.State))
+            {
+                errorList.Add(new Exception("Car state is required!"));
+            }
+
+            if (car.Class == 0)
+            {
+                errorList.Add(new Exception("Car class is required!"));
+            }
+        }
+
+
 
         //public Member? GetMemberById(int memberId)
         //{
@@ -239,36 +277,7 @@ namespace TakeHomeExercise4System.BLL
         //    return member;
         //}
 
-
-        private void ValidateFields(CarListView car)
-        {
-            if (String.IsNullOrWhiteSpace(car.Description))
-            {
-                errorList.Add(new Exception("Description is required!"));
-            }
-
-            if (String.IsNullOrWhiteSpace(car.SerialNumber))
-            {
-                errorList.Add(new Exception("SerialNumber is required!"));
-            }
-
-            if (String.IsNullOrWhiteSpace(car.Ownership))
-            {
-                errorList.Add(new Exception("Ownership is required!"));
-            }
-
-            if (String.IsNullOrWhiteSpace(car.State))
-            {
-                errorList.Add(new Exception("Car State is required!"));
-            }
-
-            if (car.Class == 0)
-            {
-                errorList.Add(new Exception("Car class is required!"));
-            }
-        }
-
     }
 
-    
+
 }

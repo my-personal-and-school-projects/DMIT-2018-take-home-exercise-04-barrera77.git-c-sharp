@@ -2,6 +2,8 @@ using Microsoft.Extensions.Configuration;
 using TakeHomeExercise4WebApp.Components;
 using TakeHomeExercise4System;
 using Microsoft.EntityFrameworkCore;
+using MudBlazor.Services;
+using BlazorDialog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,9 @@ builder.Services.TakeHomeExercise4BackEndDependencies(options =>
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddMudServices();
+builder.Services.AddBlazorDialog();
 
 var app = builder.Build();
 
