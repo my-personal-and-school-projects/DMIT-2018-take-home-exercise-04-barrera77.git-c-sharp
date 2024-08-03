@@ -23,7 +23,7 @@
     <body>
         <section>
             <div class="buttons-container d-flex">
-                <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px" @onclick="OnSave">Save</MudBlazor.MudButton>
+                <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px" @onclick="() => OnSaveOrEditMember(Member)">Save</MudBlazor.MudButton>
                 <MudBlazor.MudButton Class="btn btn-danger" Style="width: 90px" @onclick="OnCancel">Cancel</MudBlazor.MudButton>
             </div>
              <fieldset>

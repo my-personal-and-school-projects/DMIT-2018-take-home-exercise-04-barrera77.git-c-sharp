@@ -69,6 +69,7 @@ namespace TakeHomeExercise4System.BLL
                 .OrderBy(c => c.CarClassName)                
                 .ToList();
         }
+              
 
         /// <summary>
         /// Get the information for the MemberEdit Page
@@ -156,7 +157,16 @@ namespace TakeHomeExercise4System.BLL
             UpdateEntity(car);
         }
 
-       public CarListView SaveCar(CarListView carView, int memberID)
+
+        /// <summary>
+        /// Adds a new car to the member car list or edits an existing one
+        /// </summary>
+        /// <param name="carView"></param>
+        /// <param name="memberID"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="AggregateException"></exception>
+        public CarListView EditCar(CarListView carView, int memberID)
         {
             #region Business Logic and Parameter Exceptions
 
@@ -176,8 +186,15 @@ namespace TakeHomeExercise4System.BLL
             }
 
             #endregion
-          
-                Car car = new Car();
+
+            Car? car = _context.Cars
+                    .Where(car => car.MemberId == memberID &&  car.SerialNumber == carView.SerialNumber)
+                    .Select(car => car).FirstOrDefault();
+
+            if(car == null) 
+            {
+                car = new Car();
+            }
 
             car.Description = carView.Description;
             car.SerialNumber = carView.SerialNumber;
@@ -195,19 +212,96 @@ namespace TakeHomeExercise4System.BLL
             }
             else
             {             
-                _context.Cars.Add(car);
-                _context.SaveChanges();
+                if(String.IsNullOrWhiteSpace(car.SerialNumber))
+                {
+                    _context.Cars.Add(car);
+                    //_context.SaveChanges();
+                }
+                else
+                {
+                    _context.Cars.Update(car);
+                }
+                
+                _context.SaveChanges();//Save changes to the DB                
             }
 
             carView.CarID = car.CarId;
             return carView;
         }
 
-        public MemberEditView EditMember(MemberEditView memberEdit)
+
+        /// <summary>
+        /// Adds a new member to the DB or edits an existing one
+        /// </summary>
+        /// <param name="memberView"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="AggregateException"></exception>
+        public MemberEditView EditMember(MemberEditView memberView)
         {
+            #region Business Logic and Parameter Exceptions
 
+            errorList.Clear();
 
-            return memberEdit;
+            if (memberView == null)
+            {
+                throw new ArgumentNullException("No vehicle was supplied!");
+            }
+
+            ValidateEditMemberFields(memberView);           
+
+            if (errorList.Count > 0)
+            {
+                throw new AggregateException
+                    ("Please check error message(s): ", errorList);
+            }
+
+            #endregion
+
+            Member? member =  _context.Members
+                            .Where(member => member.MemberId == memberView.MemberID)
+                            .Select(member => member).FirstOrDefault(); 
+
+            if (member == null)
+            {
+                member = new Member();                     
+            }
+
+            member.FirstName = memberView.FirstName;
+            member.LastName = memberView.LastName;
+            member.Address = memberView.Address;
+            member.City = memberView.City;
+            member.PostalCode = memberView.PostalCode;
+            member.Phone = memberView.Phone;
+            member.EmailAddress = memberView.Email;
+            member.BirthDate = memberView.BirthDate;
+            member.CertificationLevel = memberView.Certification;    
+
+            if(errorList.Count > 0)
+            {
+                _context.ChangeTracker.Clear();
+
+                throw new AggregateException("Please check error message(s): ", errorList);
+            }
+            else
+            {
+                if (member.MemberId == 0)
+                {
+                    _context.Members.Add(member);
+                }
+                else
+                {
+                    _context.Members.Update(member);
+                }
+
+                _context.SaveChanges();//Save changes to the DB
+
+                // Update the vehicle count
+                memberView.VehicleCount = _context.Cars.Count(c => c.MemberId == member.MemberId && !c.RemoveFromViewFlag);
+            }
+
+            memberView.MemberID = member.MemberId;
+            return memberView;
         }
 
         private void UpdateCar(Car car)
@@ -252,6 +346,16 @@ namespace TakeHomeExercise4System.BLL
             {
                 errorList.Add(new Exception("Car class is required!"));
             }
+
+            if (car.MemberID == 0)
+            {
+                if (CarExists(car))
+                {
+                    errorList.Add(new Exception("A car with that serial number already exists"));
+                }
+            }
+
+
         }
 
         private void ValidateEditMemberFields(MemberEditView member)
@@ -298,15 +402,16 @@ namespace TakeHomeExercise4System.BLL
 
             if (!IsValidAge(member.BirthDate))
             {
-                errorList.Add(new Exception("Member should be at least 18 and less than 100 years old "));
+                errorList.Add(new Exception("Member age should be at least 18 and less than 100 years old "));
             }
 
-            List<CarListView> carList = member.CarList;
-
-
-            //Validate CarListViw fields
-            //ValidateNewCarFields(carList);
-
+            if (member.MemberID == 0)
+            {
+                if (MemberExists(member))
+                {
+                    errorList.Add(new Exception("member already exists"));
+                }
+            }            
         }
 
         /// <summary>
@@ -345,22 +450,37 @@ namespace TakeHomeExercise4System.BLL
         //}
 
 
+        /// <summary>
+        /// Validates the CarListView
+        /// </summary>
+        /// <param name="carList"></param>
         private void ValidateCars(List<CarListView> carList)
         {
-            if (carList == null) return;
-
-            var serialNumbers = new HashSet<string>();
+            if (carList == null) return;            
 
             foreach (var car in carList)
             {
-                ValidateNewCarFields(car); // Correctly pass each CarListView object
-
-                if (string.IsNullOrWhiteSpace(car.SerialNumber))
-                    errorList.Add(new Exception("Serial Number is required!"));
-
-                if (!serialNumbers.Add(car.SerialNumber))
-                    errorList.Add(new Exception("Serial Number must be unique!"));
+                ValidateNewCarFields(car);
             }
+        }
+
+
+        /// <summary>
+        /// Checks if the member already exists in the database
+        /// </summary>
+        /// <param name="programId"></param>
+        /// <param name="courseId"></param>
+        /// <returns>A bool indicating whether the member exist or not</returns>
+        public bool MemberExists(MemberEditView memberEdit)
+        {            
+            return _context.Members.Any(m => m.FirstName == memberEdit.FirstName 
+                                    && m.LastName == memberEdit.LastName
+                                    && m.Phone == memberEdit.Phone);
+        }
+
+        public bool CarExists(CarListView car)
+        {
+            return _context.Cars.Any(c => c.SerialNumber == car.SerialNumber);
         }
 
     }

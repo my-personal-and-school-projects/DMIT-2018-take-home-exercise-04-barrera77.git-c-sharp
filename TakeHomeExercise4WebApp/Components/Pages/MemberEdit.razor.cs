@@ -9,7 +9,7 @@ using BlazorDialog;
 
 namespace TakeHomeExercise4WebApp.Components.Pages
 {
-    public partial class MemberEdit
+    public partial class MemberEdit : ComponentBase
     {
         #region Properties
         [Inject]
@@ -62,7 +62,6 @@ namespace TakeHomeExercise4WebApp.Components.Pages
         private ValidationMessageStore messageStore;
 
         #endregion
-
 
         protected override async Task OnInitializedAsync()
         {
@@ -164,6 +163,9 @@ namespace TakeHomeExercise4WebApp.Components.Pages
             }
         }
 
+        /// <summary>
+        /// Cancel any action from the Member Edit Page and go back to the member search page
+        /// </summary>
         private void OnCancel()
         {
             Member = new MemberEditView();
@@ -174,7 +176,7 @@ namespace TakeHomeExercise4WebApp.Components.Pages
         {
             _navManager.NavigateTo("/MemberSearch");
         }
-             
+              
         private async Task OnRemoveVehicle(int carId)
         {
             string bodyText = $"Are you sure you want to remove the car from the list?";
@@ -218,7 +220,7 @@ namespace TakeHomeExercise4WebApp.Components.Pages
            
             try
             {
-                newCar = MemberServices.SaveCar(newCar, memberId);
+                newCar = MemberServices.EditCar(newCar, memberId);
                
                 //Update the car list
                 Member = MemberServices.GetMemberById(MemberID);
@@ -237,6 +239,43 @@ namespace TakeHomeExercise4WebApp.Components.Pages
                 }
 
                 errorMessage += "Unable to add a vehicle!";
+                foreach (Exception error in ex.InnerExceptions)
+                {
+                    errorDetails.Add(error.Message);
+                }
+            }
+            catch (ArgumentNullException ex)
+            {
+                errorMessage = BlazorHelperClass.GetInnerException(ex).Message;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = BlazorHelperClass.GetInnerException(ex).Message;
+            }
+        }
+
+        private void OnSaveOrEditMember(MemberEditView member)
+        {
+            errorDetails.Clear();
+            errorMessage = string.Empty;
+            feedbackMessage = string.Empty;
+
+            try
+            {
+                Member = MemberServices.EditMember(member);
+
+                feedbackMessage = "Data was successfully saved!";
+
+                //_navManager.NavigateTo("/MemberSearch");
+
+            }
+            catch (AggregateException ex)
+            {
+                if (!string.IsNullOrWhiteSpace(errorMessage))
+                {
+                    errorMessage += Environment.NewLine;
+                }
+                errorMessage += "Unable to add or edit member!";
                 foreach (Exception error in ex.InnerExceptions)
                 {
                     errorDetails.Add(error.Message);
