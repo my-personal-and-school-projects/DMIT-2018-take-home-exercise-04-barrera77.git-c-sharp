@@ -5,6 +5,8 @@ using TakeHomeExercise4System.ViewModels;
 using MudBlazor;
 using static MudBlazor.Icons;
 using BlazorDialog;
+using Microsoft.AspNetCore.Components.QuickGrid;
+using TakeHomeExercise4System.Entities;
 
 
 namespace TakeHomeExercise4WebApp.Components.Pages
@@ -50,9 +52,11 @@ namespace TakeHomeExercise4WebApp.Components.Pages
         public List<CertificationsView> certifications { get; set; }
         public List<CarClassListView> CarClasses { get; set; }
         public CarListView newCar { get; set; } = new CarListView();
-        public MemberEditView Member { get; set; }
+        public MemberEditView Member { get; set; } = new MemberEditView();
         public List<string> OwnershipDescriptions { get; set; } = new List<string>();
         public List<string> CarStates { get; set; } = new List<string>();
+
+        private bool isNewMember = false;
 
         #endregion
 
@@ -69,7 +73,19 @@ namespace TakeHomeExercise4WebApp.Components.Pages
 
            try
             {
-                editContext = new EditContext(newCar);
+                //Disbale Add Car button if new member
+                if(MemberID == 0)
+                {
+                    isNewMember = true;
+                }
+                
+                editContext = new EditContext(Member);
+
+                editContext.OnValidationRequested += EditContext_OnValidationRequested;
+
+                messageStore = new ValidationMessageStore(editContext);
+
+                editContext.OnFieldChanged += EditContext_OnFieldChanged;
 
                 //get certifications
                 certifications = MemberServices.GetCertificationsList();
@@ -92,6 +108,9 @@ namespace TakeHomeExercise4WebApp.Components.Pages
 
                 //Display member info
                 DisplayMemberInfo(MemberID);
+
+                await InvokeAsync(StateHasChanged);
+
 
             }
             catch (AggregateException ex)
@@ -117,26 +136,67 @@ namespace TakeHomeExercise4WebApp.Components.Pages
             }
         }
 
+
+        private void EditContext_OnFieldChanged(object? sender, FieldChangedEventArgs e)
+        {
+            editContext.Validate();
+        }
+
         private void EditContext_OnValidationRequested(object? sender, ValidationRequestedEventArgs e)
         {
             messageStore?.Clear();
 
-            if (String.IsNullOrWhiteSpace(newCar.Description))
+            if (string.IsNullOrWhiteSpace(Member.FirstName))
+            {
+                messageStore.Add(() => Member.FirstName, "First Name is required!");
+            }
+            
+            if (string.IsNullOrWhiteSpace(Member.LastName))
+            {
+                messageStore.Add(() => Member.LastName, "Last Name is required!");
+            }
+
+            if (string.IsNullOrWhiteSpace(Member.Address))
+            {
+                messageStore.Add(() => Member.Address, "Address is required!");
+            }
+
+            if (string.IsNullOrWhiteSpace(Member.City))
+            {
+                messageStore.Add(() => Member.City, "City is required!");
+            }
+
+            if (string.IsNullOrWhiteSpace(Member.PostalCode))
+            {
+                messageStore.Add(() => Member.PostalCode, "Postal Codeis required!");
+            }
+
+            if (string.IsNullOrWhiteSpace(Member.Phone))
+            {
+                messageStore.Add(() => Member.Phone, "Phone is required!");
+            }
+
+            if (string.IsNullOrWhiteSpace(Member.Email))
+            {
+                messageStore.Add(() => Member.Email, "Email is required!");
+            }
+
+            if (string.IsNullOrWhiteSpace(newCar.Description))
             {
                 messageStore.Add(() => newCar.Description, "Description is required!");
             }
 
-            if (String.IsNullOrWhiteSpace(newCar.SerialNumber))
+            if (string.IsNullOrWhiteSpace(newCar.SerialNumber))
             {
                 messageStore.Add(() => newCar.SerialNumber, "SerialNumber is required!");
             }
 
-            if (String.IsNullOrWhiteSpace(newCar.Ownership))
+            if (string.IsNullOrWhiteSpace(newCar.Ownership))
             {
                 messageStore.Add(() => newCar.Ownership, "Ownership is required!");
             }
 
-            if (String.IsNullOrWhiteSpace(newCar.State))
+            if (string.IsNullOrWhiteSpace(newCar.State))
             {
                 messageStore.Add(() => newCar.State, "Car state is required!");
             }
@@ -176,7 +236,12 @@ namespace TakeHomeExercise4WebApp.Components.Pages
         {
             _navManager.NavigateTo("/MemberSearch");
         }
-              
+
+        /// <summary>
+        /// Removes a vehicle from the current member's car list and updates the count
+        /// </summary>
+        /// <param name="carId"></param>
+        /// <returns></returns>
         private async Task OnRemoveVehicle(int carId)
         {
             string bodyText = $"Are you sure you want to remove the car from the list?";
@@ -212,6 +277,11 @@ namespace TakeHomeExercise4WebApp.Components.Pages
             }
         }
 
+
+        /// <summary>
+        /// Ads a vehicle to the list for the current member and updates the count
+        /// </summary>
+        /// <param name="memberId"></param>
         private void OnAddvehicle(int memberId)
         {
             errorDetails.Clear();
@@ -254,19 +324,48 @@ namespace TakeHomeExercise4WebApp.Components.Pages
             }
         }
 
-        private void OnSaveOrEditMember(MemberEditView member)
+        /// <summary>
+        /// Saves or edits the member and his car list
+        /// </summary>
+        /// <param name="memberView"></param>
+        private void OnSaveOrEditMember(MemberEditView memberView)
         {
             errorDetails.Clear();
             errorMessage = string.Empty;
             feedbackMessage = string.Empty;
 
             try
-            {
-                Member = MemberServices.EditMember(member);
+            {          
+                Member = MemberServices.EditMember(memberView);
 
-                feedbackMessage = "Data was successfully saved!";
+                //Update the car list
+                Member = MemberServices.GetMemberById(memberView.MemberID);
 
-                //_navManager.NavigateTo("/MemberSearch");
+                if (Member.CarList.Count == 0)
+                {
+                    MemberServices.EditCar(newCar, memberView.MemberID);
+
+                    Member = MemberServices.GetMemberById(memberView.MemberID);
+                }
+                else
+                {
+                    foreach (var car in Member.CarList)
+                    {
+                        MemberServices.EditCar(car, memberView.MemberID);
+
+                        Member = MemberServices.GetMemberById(memberView.MemberID);
+                    }
+                }
+
+                if (Member.CarList.Count == 0)
+                {
+                    errorMessage = "Member needs to have at least one vehicle to be in the club.";
+                }
+                else
+                {
+                    feedbackMessage = "Data was successfully saved!";
+                    ResetNewCarFormFields();
+                }      
 
             }
             catch (AggregateException ex)
@@ -291,6 +390,10 @@ namespace TakeHomeExercise4WebApp.Components.Pages
             }
         }
 
+
+        /// <summary>
+        /// Resets the values for the new member car form
+        /// </summary>
         private void ResetNewCarFormFields()
         {           
             newCar.Description = string.Empty;
@@ -299,5 +402,8 @@ namespace TakeHomeExercise4WebApp.Components.Pages
             newCar.State = "0";
             newCar.Class = 0;
         }
+
+        //Set pagination
+        protected PaginationState Pagination = new PaginationState { ItemsPerPage = 3 };
     }
 }

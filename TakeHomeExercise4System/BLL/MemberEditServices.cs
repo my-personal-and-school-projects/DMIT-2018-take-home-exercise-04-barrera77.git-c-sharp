@@ -159,7 +159,7 @@ namespace TakeHomeExercise4System.BLL
 
 
         /// <summary>
-        /// Adds a new car to the member car list or edits an existing one
+        /// Adds a new car to the DB or edits an existing one
         /// </summary>
         /// <param name="carView"></param>
         /// <param name="memberID"></param>
@@ -215,7 +215,7 @@ namespace TakeHomeExercise4System.BLL
                 if(String.IsNullOrWhiteSpace(car.SerialNumber))
                 {
                     _context.Cars.Add(car);
-                    //_context.SaveChanges();
+                    _context.SaveChanges();
                 }
                 else
                 {
@@ -304,22 +304,37 @@ namespace TakeHomeExercise4System.BLL
             return memberView;
         }
 
-        private void UpdateCar(Car car)
+        /// <summary>
+        /// Updates an existing car in DB belonging to the current member
+        /// </summary>
+        /// <param name="car"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        private void UpdateCar(CarListView car)
         {
             if (car == null)
             {
                 throw new ArgumentNullException("Car cannot be null", new ArgumentNullException());
             }
 
-            var currentCar = _context.Cars.Find(car.CarId);
+            var currentCar = _context.Cars.Find(car.SerialNumber);
             
             if (currentCar == null)
             {
                 throw new ArgumentException("Car not found", new ArgumentException());
             }
-          
+            else
+            {
+                UpdateEntity(currentCar);
+                _context.SaveChanges();//Save changes to the DB
+            }
         }
 
+
+        /// <summary>
+        /// Validates required fields for the car view 
+        /// </summary>
+        /// <param name="car"></param>
         private void ValidateNewCarFields(CarListView car)
         {
             if (String.IsNullOrWhiteSpace(car.Description))
@@ -354,10 +369,13 @@ namespace TakeHomeExercise4System.BLL
                     errorList.Add(new Exception("A car with that serial number already exists"));
                 }
             }
-
-
         }
 
+
+        /// <summary>
+        /// Validates required fields for the MemberEdit view 
+        /// </summary>
+        /// <param name="member"></param>
         private void ValidateEditMemberFields(MemberEditView member)
         {
             if(String.IsNullOrWhiteSpace(member.FirstName))
@@ -415,7 +433,7 @@ namespace TakeHomeExercise4System.BLL
         }
 
         /// <summary>
-        /// Checks for a valid date, if the member is 18+ < 100
+        /// Checks for a valid date of birth, if the member is 18 < 100
         /// </summary>
         /// <param name="birthDate"></param>
         /// <returns>Age validation</returns>
@@ -425,30 +443,6 @@ namespace TakeHomeExercise4System.BLL
             if (birthDate.Date > DateTime.Today.AddYears(-age)) age--;
             return age >= 18 && age <= 100;
         }
-
-
-
-        //public Member? GetMemberById(int memberId)
-        //{
-        //    if (memberId == 0)
-        //    {
-        //        throw new ArgumentException("Please provide a valid customer ID");
-        //    }
-
-        //    var member = _context.Members
-        //    .Where(m => m.MemberId == memberId)
-        //    .Include(m => m.Cars)
-        //    .FirstOrDefault();
-
-        //    // If member is found, order the cars by CarId in descending order
-        //    if (member != null)
-        //    {
-        //        member.Cars = member.Cars.OrderByDescending(c => c.CarId).ToList();
-        //    }
-
-        //    return member;
-        //}
-
 
         /// <summary>
         /// Validates the CarListView
@@ -478,6 +472,12 @@ namespace TakeHomeExercise4System.BLL
                                     && m.Phone == memberEdit.Phone);
         }
 
+
+        /// <summary>
+        /// Checks if the car already exists in the database
+        /// </summary>
+        /// <param name="car"></param>
+        /// <returns></returns>
         public bool CarExists(CarListView car)
         {
             return _context.Cars.Any(c => c.SerialNumber == car.SerialNumber);

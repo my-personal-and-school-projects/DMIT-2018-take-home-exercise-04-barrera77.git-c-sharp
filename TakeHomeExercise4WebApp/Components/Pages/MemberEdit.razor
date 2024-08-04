@@ -21,74 +21,85 @@
        
     </header>
     <body>
-        <section>
-            <div class="buttons-container d-flex">
-                <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px" @onclick="() => OnSaveOrEditMember(Member)">Save</MudBlazor.MudButton>
-                <MudBlazor.MudButton Class="btn btn-danger" Style="width: 90px" @onclick="OnCancel">Cancel</MudBlazor.MudButton>
-            </div>
-             <fieldset>
-                <div class="new-member-info row-cols-2">
-                    <div class="col-left col-6">
-                        <div class="row-cols-2 d-flex">
-                            <label for="first-name" class="form-label col-2">First Name:</label>
-                            <InputText class="form-control" id="first-name" @bind-Value="@Member.FirstName" />
-                        </div>
-
-                        <div class="row-cols-2 d-flex">
-                            <label for="last-name" class="form-label col-2">Last Name:</label>
-                            <InputText class="form-control" type="text" id="last-name" @bind-Value="@Member.LastName" />
-                        </div>
-
-                        <div class="row-cols-2 d-flex">
-                            <label for="address" class="form-label col-2">Address:</label>
-                            <InputText class="form-control" type="text" id="address" @bind-Value="@Member.Address" />
-                        </div>
-
-                        <div class="row-cols-2 d-flex">
-                            <label for="city" class="form-label col-2">City:</label>
-                            <InputText class="form-control" type="text" id="city" @bind-Value="@Member.City" />
-                        </div>
-
-                        <div class="row-cols-2 d-flex">
-                            <label for="postal-code" class="form-label col-2">Postal Code:</label>
-                            <InputText class="form-control" type="text" id="postal-code" @bind-Value="@Member.PostalCode" />
-                        </div>
-                    </div>
-
-                    <div class="col-right col-6">
-                        <div class="row-cols-2 d-flex">
-                            <label for="phone" class="form-label col-2">Phone:</label>
-                            <InputText class="form-control" type="text" id="phone" @bind-Value="@Member.Phone" />
-                        </div>
-
-                        <div class="row-cols-2 d-flex">
-                            <label for="email" class="form-label col-2">Email:</label>
-                            <InputText class="form-control" type="text" id="email" @bind-Value="@Member.Email" />
-                        </div>
-
-                        <div class="row-cols-2 d-flex">
-                            <label for="birth-date" class="form-label col-2">Birth Date:</label>
-                            <InputDate class="form-control" id="birth-date" @bind-Value="Member.BirthDate" />
-                        </div>
-
-                        <div class="row-cols-2 d-flex">
-                            <label for="certification" class="form-label col-2">Certification:</label>
-                            <InputSelect @bind-Value="@(Member.Certification)" class="form-select form-control" id="certification">
-                                <option selected value=""> Select . . .</option>
-
-                                @if (certifications != null)
-                                {
-                                    foreach (var c in certifications)
-                                    {
-                                        <option value="@c.CertificationLevel">@c.Description</option>
-                                    }
-                                }
-                            </InputSelect>
-                        </div>
-                    </div>
+        <EditForm EditContext="editContext">
+            <DataAnnotationsValidator />            
+            <section>
+                <div class="buttons-container d-flex">
+                    <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px" @onclick="() => OnSaveOrEditMember(Member)">Save</MudBlazor.MudButton>
+                    <MudBlazor.MudButton Class="btn btn-danger" Style="width: 90px" @onclick="OnCancel">Cancel</MudBlazor.MudButton>
                 </div>
-             </fieldset>
-        </section>
+                <fieldset>
+                    <div class="new-member-info row-cols-2">
+                        <div class="col-left col-6">
+                            <div class="row-cols-2 d-flex">
+                                <label for="first-name" class="form-label col-2">First Name:</label>
+                                <InputText class="form-control" id="first-name" @bind-Value="@Member.FirstName" />
+                                <ValidationMessage For="() => Member.FirstName" />
+                            </div>
+
+                            <div class="row-cols-2 d-flex">
+                                <label for="last-name" class="form-label col-2">Last Name:</label>
+                                <InputText class="form-control" type="text" id="last-name" @bind-Value="@Member.LastName" />
+                                <ValidationMessage For="() => Member.LastName" />
+                            </div>
+
+                            <div class="row-cols-2 d-flex">
+                                <label for="address" class="form-label col-2">Address:</label>
+                                <InputText class="form-control" type="text" id="address" @bind-Value="@Member.Address" />
+                                <ValidationMessage For="() => Member.Address" />
+                            </div>
+
+                            <div class="row-cols-2 d-flex">
+                                <label for="city" class="form-label col-2">City:</label>
+                                <InputText class="form-control" type="text" id="city" @bind-Value="@Member.City" />
+                                <ValidationMessage For="() => Member.City" />
+                            </div>
+
+                            <div class="row-cols-2 d-flex">
+                                <label for="postal-code" class="form-label col-2">Postal Code:</label>
+                                <InputText class="form-control" type="text" id="postal-code" @bind-Value="@Member.PostalCode" />
+                                <ValidationMessage For="() => Member.PostalCode" />
+                            </div>
+                        </div>
+
+                        <div class="col-right col-6">
+                            <div class="row-cols-2 d-flex">
+                                <label for="phone" class="form-label col-2">Phone:</label>
+                                <InputText class="form-control" type="text" id="phone" @bind-Value="@Member.Phone" />
+                                <ValidationMessage For="() => Member.Phone" />
+                            </div>
+
+                            <div class="row-cols-2 d-flex">
+                                <label for="email" class="form-label col-2">Email:</label>
+                                <InputText class="form-control" type="text" id="email" @bind-Value="@Member.Email" />
+                                <ValidationMessage For="() => Member.Email" />
+                            </div>
+
+                            <div class="row-cols-2 d-flex">
+                                <label for="birth-date" class="form-label col-2">Birth Date:</label>
+                                <InputDate class="form-control" id="birth-date" @bind-Value="Member.BirthDate" />
+                            </div>
+
+                            <div class="row-cols-2 d-flex">
+                                <label for="certification" class="form-label col-2">Certification:</label>
+                                <InputSelect @bind-Value="@(Member.Certification)" class="form-select form-control" id="certification">
+                                    <option selected value=""> Select . . .</option>
+
+                                    @if (certifications != null)
+                                    {
+                                        foreach (var c in certifications)
+                                        {
+                                            <option value="@c.CertificationLevel">@c.Description</option>
+                                        }
+                                    }
+                                </InputSelect>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </section>
+        </EditForm>
+        
 
         <section>
             <h4>Member Car(s)</h4>
@@ -114,12 +125,24 @@
                 }
                 else
                 {
-                    <QuickGrid Items="Member.CarList.AsQueryable()" Class="quickgrid-row-divider">
+                    <div class="page-size-chooser">
+                        Items per page:
+                        <select @bind="Pagination.ItemsPerPage">
+                            <option>1</option>
+                            <option>3</option>
+                            <option>5</option>
+                            <option>10</option>
+                            <option>20</option>
+                            <option>100</option>
+                        </select>
+                    </div>
+
+                    <QuickGrid Items="Member.CarList.AsQueryable()" Class="quickgrid-row-divider" Pagination="Pagination">
                         <TemplateColumn>
                             <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px" @onclick="@(() => OnRemoveVehicle(context.CarID))">Remove</MudBlazor.MudButton>
                         </TemplateColumn>
-                        <PropertyColumn Property="@(c => c.CarID)" Title="CarID"/>
-                        <PropertyColumn Property="@(c => c.TempID)" Title="TempID"/>
+                        <PropertyColumn Property="@(c => c.CarID)" Title="CarID" Sortable="true" />
+                        <PropertyColumn Property="@(c => c.TempID)" Title="TempID" Sortable="true" />
                         <TemplateColumn Title="Description">
                             <InputText class="form-control" id="description" @bind-Value="context.Description" />
                         </TemplateColumn>
@@ -163,6 +186,7 @@
                       </TemplateColumn>
                     <PropertyColumn Property="@(c => c.RemoveFromViewFlag)" Title="Remove Flag" />
                     </QuickGrid>
+                    <Paginator State="@Pagination" />
                 }
             </div>
         </section>
@@ -172,7 +196,7 @@
             <EditForm EditContext="editContext">
                 <DataAnnotationsValidator />
                 <div class="buttons-container d-flex">
-                    <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px" OnClick="() => OnAddvehicle(MemberID)">Add Car</MudBlazor.MudButton>
+                    <MudBlazor.MudButton Class="btn btn-success" Style="width: 90px" OnClick="() => OnAddvehicle(MemberID)" Disabled="@isNewMember">Add Car</MudBlazor.MudButton>
                 </div>
 
                 <div>

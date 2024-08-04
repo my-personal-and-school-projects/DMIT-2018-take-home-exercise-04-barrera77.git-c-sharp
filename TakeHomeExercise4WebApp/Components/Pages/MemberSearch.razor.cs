@@ -26,6 +26,8 @@ namespace TakeHomeExercise4WebApp.Components.Pages
 
         private string SearchParam { get; set; }
 
+        private bool isNewMember;
+
 
         private async Task SearchMembers()
         {
