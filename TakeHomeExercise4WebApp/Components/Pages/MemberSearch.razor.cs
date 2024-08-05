@@ -8,6 +8,9 @@ namespace TakeHomeExercise4WebApp.Components.Pages
 {
     public partial class MemberSearch
     {
+        private string feedbackMessage;
+        private string errorMessage;
+
         [Inject]
         private ILogger<MemberSearch> Logger { get; set; }
 
@@ -22,33 +25,42 @@ namespace TakeHomeExercise4WebApp.Components.Pages
         [Parameter]
         public string FirstName { get; set; }
 
-        private string ErrorMessage { get; set; }
 
         private string SearchParam { get; set; }
-
-        private bool isNewMember;
-
+        private List<string> errorDetails = new List<string>();
 
         private async Task SearchMembers()
         {
             try
             {
-                //if (string.IsNullOrEmpty(SearchParam) || !char.IsLetter(SearchParam[0]))
-                //{
-                //    throw new ArgumentException($"{SearchParam} is not valid lastName");
-                //}
+                errorDetails.Clear();
+                errorMessage = string.Empty;
+                feedbackMessage = string.Empty;
+                MemberList.Clear();
 
-                MemberList = await Task.Run(() => MemberListServices.GetMembersList(SearchParam));
-                ErrorMessage = null;
+                 MemberList = await Task.Run(() => MemberListServices.GetMembersList(SearchParam));
+                errorMessage = null;
 
             }
-            catch (ArgumentException ex)
+            catch (AggregateException ex)
             {
-                ErrorMessage = $"Validation Error: {ex.Message}";
+                if (!string.IsNullOrWhiteSpace(errorMessage))
+                {
+                    errorMessage += Environment.NewLine;
+                }
+                errorMessage += "Unable to search for customer.";
+                foreach (Exception error in ex.InnerExceptions)
+                {
+                    errorDetails.Add(error.Message);
+                }
+            }
+            catch (ArgumentNullException ex)
+            {
+                errorMessage = BlazorHelperClass.GetInnerException(ex).Message;
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"An error occurred: {ex.Message}";
+                errorMessage = BlazorHelperClass.GetInnerException(ex).Message;
             }
         }
 
@@ -59,7 +71,6 @@ namespace TakeHomeExercise4WebApp.Components.Pages
 
         private void OnEdit(int memberId)
         {
-            Logger.LogInformation($"MemberID: {memberId}");
             _navManager.NavigateTo($"Member/{memberId}");
         }
 
