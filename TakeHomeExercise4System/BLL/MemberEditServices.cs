@@ -25,10 +25,7 @@ namespace TakeHomeExercise4System.BLL
         }
 
         #region Validation
-        private string feedbackMessage;
-        private string errorMessage;
-        private bool hasFeedback => !string.IsNullOrWhiteSpace(feedbackMessage);
-        private bool hasError => !string.IsNullOrWhiteSpace(errorMessage);
+        private string errorMessage;       
         #endregion
 
         [Inject]

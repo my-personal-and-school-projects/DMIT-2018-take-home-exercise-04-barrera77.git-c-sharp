@@ -36,7 +36,6 @@ namespace TakeHomeExercise4WebApp.Components.Pages
                 errorDetails.Clear();
                 errorMessage = string.Empty;
                 feedbackMessage = string.Empty;
-                MemberList.Clear();
 
                  MemberList = await Task.Run(() => MemberListServices.GetMembersList(SearchParam));
                 errorMessage = null;
