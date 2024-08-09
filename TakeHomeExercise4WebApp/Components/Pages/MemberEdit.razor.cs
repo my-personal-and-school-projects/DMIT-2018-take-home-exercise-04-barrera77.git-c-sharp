@@ -336,48 +336,61 @@ namespace TakeHomeExercise4WebApp.Components.Pages
 
             try
             {
-                // Prevent the system from saving the member if user is not including the car information
-                if (string.IsNullOrWhiteSpace(newCar.Description) ||
-                    string.IsNullOrWhiteSpace(newCar.SerialNumber) ||
-                    string.IsNullOrWhiteSpace(newCar.Ownership) ||
-                    string.IsNullOrWhiteSpace(newCar.State) ||
-                    newCar.Class == 0)
+
+                // Check if new member or an existing one
+                bool isNewMember = memberView.MemberID == 0;
+
+                // Perform validation for new members
+                if (isNewMember)
                 {
-                    errorMessage = "The member needs to have a car to be saved.";
-                    return; // Exit the method if validation fails
-                }
-
-                Member = MemberServices.EditMember(memberView);
-
-                //Update the car list
-                Member = MemberServices.GetMemberById(memberView.MemberID);
-
-                if (Member.CarList.Count == 0)
-                {
-                    MemberServices.EditCar(newCar, memberView.MemberID);
-
-                    Member = MemberServices.GetMemberById(memberView.MemberID);
-                }
-                else
-                {
-                    foreach (var car in Member.CarList)
+                    // Validate car fields for new members
+                    if (string.IsNullOrWhiteSpace(newCar.Description) ||
+                        string.IsNullOrWhiteSpace(newCar.SerialNumber) ||
+                        string.IsNullOrWhiteSpace(newCar.Ownership) ||
+                        string.IsNullOrWhiteSpace(newCar.State) ||
+                        newCar.Class == 0)
                     {
-                        MemberServices.EditCar(car, memberView.MemberID);
-
-                        Member = MemberServices.GetMemberById(memberView.MemberID);
+                        errorMessage = "Please fill out all car fields. A new member needs to have at least one car.";
+                        return; // Exit the method if validation fails
                     }
                 }
 
-                if (Member.CarList.Count == 0)
+                if (isNewMember)
                 {
-                    errorMessage = "Member needs to have at least one vehicle to be in the club.";
+                    // Create a new member
+                    Member = MemberServices.EditMember(memberView);
+
+                    // Add the new car if it’s a new member
+                    MemberServices.EditCar(newCar, Member.MemberID);
+
+                    feedbackMessage = "Data was successfully saved!";
                 }
                 else
                 {
+                    // Edit existing member
+                    Member = MemberServices.EditMember(memberView);
+
+                    // Update the car list
+                    Member = MemberServices.GetMemberById(memberView.MemberID);
+                    if (Member.CarList.Count == 0)
+                    {
+                        // Add car if there are no cars for an existing member
+                        MemberServices.EditCar(newCar, memberView.MemberID);
+                        Member = MemberServices.GetMemberById(memberView.MemberID);
+                    }
+                    else
+                    {
+                        // Update existing cars
+                        foreach (var car in Member.CarList)
+                        {
+                            MemberServices.EditCar(car, memberView.MemberID);
+                        }
+                    }
+
                     feedbackMessage = "Data was successfully saved!";
-                    ResetNewCarFormFields();
-                }      
+                }
             }
+
             catch (AggregateException ex)
             {
                 if (!string.IsNullOrWhiteSpace(errorMessage))
