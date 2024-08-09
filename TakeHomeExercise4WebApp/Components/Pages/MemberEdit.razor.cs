@@ -335,7 +335,18 @@ namespace TakeHomeExercise4WebApp.Components.Pages
             feedbackMessage = string.Empty;
 
             try
-            {          
+            {
+                // Prevent the system from saving the member if user is not including the car information
+                if (string.IsNullOrWhiteSpace(newCar.Description) ||
+                    string.IsNullOrWhiteSpace(newCar.SerialNumber) ||
+                    string.IsNullOrWhiteSpace(newCar.Ownership) ||
+                    string.IsNullOrWhiteSpace(newCar.State) ||
+                    newCar.Class == 0)
+                {
+                    errorMessage = "The member needs to have a car to be saved.";
+                    return; // Exit the method if validation fails
+                }
+
                 Member = MemberServices.EditMember(memberView);
 
                 //Update the car list
@@ -366,7 +377,6 @@ namespace TakeHomeExercise4WebApp.Components.Pages
                     feedbackMessage = "Data was successfully saved!";
                     ResetNewCarFormFields();
                 }      
-
             }
             catch (AggregateException ex)
             {
