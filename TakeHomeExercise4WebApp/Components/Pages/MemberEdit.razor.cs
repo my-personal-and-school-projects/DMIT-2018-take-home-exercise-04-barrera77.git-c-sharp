@@ -363,7 +363,11 @@ namespace TakeHomeExercise4WebApp.Components.Pages
                     // Add the new car if it’s a new member
                     MemberServices.EditCar(newCar, Member.MemberID);
 
+                    // Update the car list
+                    Member = MemberServices.GetMemberById(memberView.MemberID);
+
                     feedbackMessage = "Data was successfully saved!";
+                    ResetNewCarFormFields();
                 }
                 else
                 {
@@ -377,6 +381,8 @@ namespace TakeHomeExercise4WebApp.Components.Pages
                         // Add car if there are no cars for an existing member
                         MemberServices.EditCar(newCar, memberView.MemberID);
                         Member = MemberServices.GetMemberById(memberView.MemberID);
+
+                        ResetNewCarFormFields();
                     }
                     else
                     {
@@ -388,6 +394,7 @@ namespace TakeHomeExercise4WebApp.Components.Pages
                     }
 
                     feedbackMessage = "Data was successfully saved!";
+                
                 }
             }
 
